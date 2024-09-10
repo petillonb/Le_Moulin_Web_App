@@ -9,7 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { createClient } from '@supabase/supabase-js';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../common/supabase/supabase.service';
-import { Jeune } from '../entities/jeune.entite';
+import { Activité } from '../entities/activité.entite';
 import {MatSort, MatSortModule} from '@angular/material/sort' ;
 import {AfterViewInit , ViewChild} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
@@ -17,18 +17,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
-  selector: 'app-jeunesse',
+  selector: 'app-activite',
   standalone: true,
   imports: [CommonModule, MatTabsModule, MatTableModule, MatCheckboxModule,MatSortModule, MatPaginatorModule, FormsModule, MatSidenavModule,MatFormFieldModule, MatInputModule],
   providers: [SupabaseService],
-  templateUrl: './jeunesse.component.html',
-  styleUrl: './jeunesse.component.scss',
+  templateUrl: './activite.component.html',
+  styleUrl: './activite.component.scss'
 })
-export class JeunesseComponent implements OnInit {
+export class ActiviteComponent {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  listOfJeunes: Jeune[] = []
+  listOfActivite: Activité[] = []
 
   constructor(
     private supabaseService: SupabaseService,
@@ -36,37 +36,13 @@ export class JeunesseComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
 
   async ngOnInit() {
-    this.listOfJeunes = await this.supabaseService.fetchJeunesseData()
+    this.listOfActivite = await this.supabaseService.fetchActivitéData()
   } 
 
-  displayedColumns: string[] = ['firstName', 'lastName', 'mobile', 'fixe', 'mail', 'adresse'];
-  dataSource = new MatTableDataSource(this.listOfJeunes);
+  displayedColumns: string[] = ['name', 'sector'];
+  dataSource = new MatTableDataSource(this.listOfActivite);
 
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-
-  }
-
-  goToJeunePage(idJeune: string){
-    console.log("goToJeunePage", idJeune)
-    this.router.navigate([`/jeunesse/${idJeune}`]);
-  }
-  goToNouveauJeunePage(){
-    console.log("goToJeunePage")
-    this.router.navigate([`/jeunesse/nouveau`]);
-  }
 
 }
-

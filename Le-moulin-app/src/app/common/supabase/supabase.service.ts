@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { Form } from '@angular/forms'
 import {
   AuthChangeEvent,
   AuthSession,
@@ -8,6 +9,7 @@ import {
   User,
 } from '@supabase/supabase-js'
 import { environment } from '../../../environment'
+import { Activité } from '../../entities/activité.entite'
 import { Jeune } from '../../entities/jeune.entite'
 
 export interface Profile {
@@ -21,6 +23,7 @@ export interface Profile {
   providedIn: 'root',
 })
 export class SupabaseService {
+ 
   private supabase: SupabaseClient
   _session: AuthSession | null = null
 
@@ -84,4 +87,60 @@ export class SupabaseService {
     }
     return (data);
   }
+  async fetchActivitéData(): Promise<Activité[]> {
+    const { data, error } = await this.supabase
+      .from('Action')
+      .select<'*', Activité>()
+    console.log("fetchActivitéData", data, error);
+    
+    if (error) {
+      console.log(error)
+      return []
+    }
+    return (data);
+  }
+
+  async fetchJeunesseDataById(id: string): Promise<Jeune> {
+    const { data, error } = await this.supabase
+      .from('test')
+      .select<'*', Jeune>()
+      .eq('id', id)
+    console.log("fetchJeunesseDataById", data, error);
+    if (error && data && data[0] == null) {
+      console.log(error)
+      return {} as Jeune
+    }
+    return data![0]
+  }
+  async updateJeunesseData(jeuneData:Jeune, id:number) {
+    console.log("saving")
+    const {} = await this.supabase
+      .from('test')
+      .update({
+        firstName: jeuneData.firstName, 
+        lastName: jeuneData.lastName,
+        mobile: jeuneData.mobile,
+        fixe: jeuneData.fixe,
+        mail: jeuneData.mail,
+        adresse: jeuneData.adresse
+      })
+      .eq('id',id);
+
+  }
+  async insertJeunesseData(jeuneData:Jeune){
+    console.log("saving")
+    const {} = await this.supabase
+      .from('test')
+      .insert({
+        firstName: jeuneData.firstName, 
+        lastName: jeuneData.lastName,
+        mobile: jeuneData.mobile,
+        fixe: jeuneData.fixe,
+        mail: jeuneData.mail,
+        adresse: jeuneData.adresse
+      })
+      .select()
+
+  }
+
 }

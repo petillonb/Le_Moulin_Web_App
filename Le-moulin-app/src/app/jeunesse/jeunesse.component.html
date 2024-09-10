@@ -1,34 +1,28 @@
 <div>
   <h1>Jeunes ({{listOfJeunes.length}})</h1>
-  <mat-table *ngIf="listOfJeunes.length > 0" [dataSource]="listOfJeunes" class="mat-elevation-z8">
-    <ng-container matColumnDef="lastName">
-      <th mat-header-cell *matHeaderCellDef> Last Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.lastName}} </td>
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+  </mat-form-field>
+  <table mat-table *ngIf="listOfJeunes.length > 0" [dataSource]="listOfJeunes" class="mat-elevation-z8">
+
+    @for (column of displayedColumns; track column) {
+    <ng-container [matColumnDef]="column">
+      <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+      <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
     </ng-container>
-    <ng-container matColumnDef="firstName">
-      <th mat-header-cell *matHeaderCellDef> First Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.firstName}} </td>
-    </ng-container>
-    <ng-container matColumnDef="mobile">
-      <th mat-header-cell *matHeaderCellDef> Mobile </th>
-      <td mat-cell *matCellDef="let element"> {{element.mobile}} </td>
-    </ng-container>
-    <ng-container matColumnDef="fixe">
-      <th mat-header-cell *matHeaderCellDef> Fixe </th>
-      <td mat-cell *matCellDef="let element"> {{element.fixe}} </td>
-    </ng-container>
-    <ng-container matColumnDef="mail">
-      <th mat-header-cell *matHeaderCellDef> Mail </th>
-      <td mat-cell *matCellDef="let element"> {{element.mail}} </td>
-    </ng-container>
-    <ng-container matColumnDef="adresse">
-      <th mat-header-cell *matHeaderCellDef> Adresse </th>
-      <td mat-cell *matCellDef="let element"> {{element.adresse}} </td>
-    </ng-container>
+    }
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </mat-table>
+    <tr mat-row (click)="goToJeunePage(row.id)" *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+
   <div *ngIf="listOfJeunes.length === 0">
     <p>No data</p>
   </div>
+
+  <button mat-button (click)="goToNouveauJeunePage()">Inscrire Jeune </button>
+
 </div>

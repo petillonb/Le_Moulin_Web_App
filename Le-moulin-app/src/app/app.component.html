@@ -1,6 +1,5 @@
-
 <mat-toolbar>
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"  (click)="toggleDrawer()">
     <mat-icon>menu</mat-icon>
   </button>
   <span>My App</span>
@@ -10,16 +9,23 @@
 
 
 
-
-<mat-drawer-container class="menu-container">
-  <mat-drawer mode="side" opened>
+<mat-drawer-container class="menu-container" autosize>
+  <mat-drawer #drawer class="example-sidenav" mode="side" [opened]="isDrawerOpened">
     <mat-list role="list">
-    <mat-list-item role="listitem"> <a routerLink="/homepage" routerLinkActive="active" ariaCurrentWhenActive="page">Homepage</a> </mat-list-item>
-    <mat-divider></mat-divider>
-    <mat-list-item role="listitem"> <a routerLink="/jeunesse" routerLinkActive="active" ariaCurrentWhenActive="page">Jeunesse</a> </mat-list-item>
-  </mat-list></mat-drawer>
+      <mat-list-item role="listitem"> <a routerLink="/homepage" routerLinkActive="active"
+          ariaCurrentWhenActive="page">Homepage</a> </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item role="listitem"> <a routerLink="/jeunesse" routerLinkActive="active"
+          ariaCurrentWhenActive="page">Jeunesse</a> </mat-list-item>
+    </mat-list>
+  </mat-drawer> 
   <mat-drawer-content>
     <router-outlet></router-outlet>
   </mat-drawer-content>
-</mat-drawer-container>
+  <div class="example-sidenav-content">
+    <button type="button" mat-button (click)="toggleDrawer()">
+      Toggle sidenav
+    </button>
+  </div>
 
+</mat-drawer-container>
