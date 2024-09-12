@@ -4,6 +4,7 @@ import {
   AuthChangeEvent,
   AuthSession,
   createClient,
+  QueryData,
   Session,
   SupabaseClient,
   User,
@@ -11,6 +12,7 @@ import {
 import { environment } from '../../../environment'
 import { Activité } from '../../entities/activité.entite'
 import { Jeune } from '../../entities/jeune.entite'
+import { Identite } from '../../entities/identite.entite'
 
 export interface Profile {
   id?: string
@@ -23,7 +25,7 @@ export interface Profile {
   providedIn: 'root',
 })
 export class SupabaseService {
- 
+
   private supabase: SupabaseClient
   _session: AuthSession | null = null
 
@@ -76,23 +78,23 @@ export class SupabaseService {
   }
 
   async fetchJeunesseData(): Promise<Jeune[]> {
-    const { data, error } = await this.supabase
-      .from('test')
-      .select<'*', Jeune>()
-    console.log("fetchJeunesseData", data, error);
-    
-    if (error) {
-      console.log(error)
-      return []
-    }
-    return (data);
+    const jeuneAvecIdentiteEtFamilleQuery = await this.supabase
+      .from('jeune')
+      .select('scholarite,ecole,classe,prof_principale, identite_id (nom,prenom,date_naissance,nationalite,genre),famille_id (nom)')
+    type JeuneAvecIdentiteEtFamille = QueryData<typeof jeuneAvecIdentiteEtFamilleQuery>
+
+    const { data, error } = await jeuneAvecIdentiteEtFamilleQuery
+    if (error) throw error
+    const jeuneAvecIdentiteEtFamille: JeuneAvecIdentiteEtFamille = data as JeuneAvecIdentiteEtFamille
+
+    return (jeuneAvecIdentiteEtFamille  as Jeune[]);
   }
   async fetchActivitéData(): Promise<Activité[]> {
     const { data, error } = await this.supabase
       .from('Action')
       .select<'*', Activité>()
     console.log("fetchActivitéData", data, error);
-    
+
     if (error) {
       console.log(error)
       return []
@@ -112,32 +114,32 @@ export class SupabaseService {
     }
     return data![0]
   }
-  async updateJeunesseData(jeuneData:Jeune, id:number) {
+  async updateJeunesseData(jeuneData: Jeune, id: number) {
     console.log("saving")
-    const {} = await this.supabase
+    const { } = await this.supabase
       .from('test')
       .update({
-        firstName: jeuneData.firstName, 
-        lastName: jeuneData.lastName,
-        mobile: jeuneData.mobile,
-        fixe: jeuneData.fixe,
-        mail: jeuneData.mail,
-        adresse: jeuneData.adresse
+        // firstName: jeuneData.firstName, 
+        // lastName: jeuneData.lastName,
+        // mobile: jeuneData.mobile,
+        // fixe: jeuneData.fixe,
+        // mail: jeuneData.mail,
+        // adresse: jeuneData.adresse
       })
-      .eq('id',id);
+      .eq('id', id);
 
   }
-  async insertJeunesseData(jeuneData:Jeune){
+  async insertJeunesseData(jeuneData: Jeune) {
     console.log("saving")
-    const {} = await this.supabase
+    const { } = await this.supabase
       .from('test')
       .insert({
-        firstName: jeuneData.firstName, 
-        lastName: jeuneData.lastName,
-        mobile: jeuneData.mobile,
-        fixe: jeuneData.fixe,
-        mail: jeuneData.mail,
-        adresse: jeuneData.adresse
+        // firstName: jeuneData.firstName, 
+        // lastName: jeuneData.lastName,
+        // mobile: jeuneData.mobile,
+        // fixe: jeuneData.fixe,
+        // mail: jeuneData.mail,
+        // adresse: jeuneData.adresse
       })
       .select()
 

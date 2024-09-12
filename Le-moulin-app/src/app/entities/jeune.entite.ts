@@ -1,9 +1,13 @@
+import { Famille } from "./famille.entite";
+import { Identite } from "./identite.entite";
+
 
 export interface Jeune {
-    lastName: string;
-    firstName: string;
-    mobile: string;
-    fixe: string;
-    mail: string;
-    adresse: string;
+    identite: Identite;
+    scholarise: boolean;
+    ecole: string;
+    classe: string;
+    prof: Identite;
+    famille: Famille;
+   
   }
