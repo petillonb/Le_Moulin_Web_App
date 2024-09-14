@@ -3,11 +3,13 @@ import { Identite } from "./identite.entite";
 
 
 export interface Jeune {
-    identite: Identite;
+
+    id:number;
+    identite_id: Identite;
     scholarise: boolean;
     ecole: string;
     classe: string;
-    prof: Identite;
-    famille: Famille;
+    prof_principale_id: Identite;
+    famille_id: Famille;
    
   }

@@ -4,7 +4,7 @@
     <mat-label>Filter</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
   </mat-form-field>
-  <table mat-table *ngIf="listOfJeunes.length > 0" [dataSource]="listOfJeunes" class="mat-elevation-z8">
+  <table mat-table *ngIf="listOfJeunes.length > 0" [dataSource]="listOfRows" class="mat-elevation-z8">
 
     @for (column of displayedColumns; track column) {
     <ng-container [matColumnDef]="column">

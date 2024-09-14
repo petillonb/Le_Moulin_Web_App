@@ -14,6 +14,14 @@ import {MatSort, MatSortModule} from '@angular/material/sort' ;
 import {AfterViewInit , ViewChild} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TestBed } from '@angular/core/testing';
+
+export interface tableRow {
+  id:number;
+  prenom: string;
+  nom: string;  
+}
+
 
 
 @Component({
@@ -29,6 +37,7 @@ export class JeunesseComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   listOfJeunes: Jeune[] = []
+  listOfRows: tableRow[] = []
 
   constructor(
     private supabaseService: SupabaseService,
@@ -43,10 +52,22 @@ export class JeunesseComponent implements OnInit {
 
   async ngOnInit() {
     this.listOfJeunes = await this.supabaseService.fetchJeunesseData()
+    console.log(this.listOfJeunes)
+    for(let i = 0; i < this.listOfJeunes.length; i++){
+      let id = this.listOfJeunes[i].id;
+      console.log(id)
+      let prenom = this.listOfJeunes[i].identite_id.prenom;
+      console.log(prenom)
+      let nom = this.listOfJeunes[i].identite_id.nom;
+      console.log(nom)
+      this.listOfRows.push({id,nom,prenom})
+      console.log(this.listOfRows[i]);
+    }
+    
   } 
 
-  displayedColumns: string[] = ['firstName', 'lastName', 'mobile', 'fixe', 'mail', 'adresse'];
-  dataSource = new MatTableDataSource(this.listOfJeunes);
+  displayedColumns: string[] = ['nom', 'prenom'];
+  dataSource = new MatTableDataSource(this.listOfRows);
 
 
   applyFilter(event: Event) {

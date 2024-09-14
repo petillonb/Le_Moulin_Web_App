@@ -1,50 +1,182 @@
-<div>
-    <div class="profile-header">
-        <button mat-icon-button (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h3>
-            <!-- Profile de {{jeuneData.firstName }} {{jeuneData.lastName}} -->
-        </h3>
-        <span class="spacer"></span>
-        <button mat-button (click)="toggleEditMode()">
-            <mat-icon>edit</mat-icon>
-            <span *ngIf="!editMode">Editer</span>
-            <span *ngIf="editMode">Annuler</span>
-        </button>
-        <button mat-button (click)="saveData()" >
-            <span *ngIf="editMode">Sauvegarder</span>
-        </button>
-    </div>
-    <div class="profile-content">
+<div class="profile-header">
+    <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h3>
+        <!-- Profile de {{jeuneData.firstName }} {{jeuneData.lastName}} -->
+    </h3>
+    <span class="spacer"></span>
+    <button mat-button (click)="toggleEditMode()">
+        <mat-icon>edit</mat-icon>
+        <span *ngIf="!editMode">Editer</span>
+        <span *ngIf="editMode">Annuler</span>
+    </button>
+    <button mat-button (click)="saveData()" >
+        <span *ngIf="editMode">Sauvegarder</span>
+    </button>
+</div>
+<div class="profile-content">
 
-        <div [formGroup]="form" >
+    <div [formGroup]="form">
+        <!-- Jeune Info Section -->
+        <div class="section">
+            <h2>Jeune Info</h2>
+            
             <mat-form-field appearance="outline">
                 <mat-label>Prénom</mat-label>
-                <input matInput formControlName="firstName" required>
+                <input matInput formControlName="prenom_jeune" required>
             </mat-form-field>
+    
             <mat-form-field appearance="outline">
                 <mat-label>Nom</mat-label>
-                <input matInput formControlName="lastName" required>
+                <input matInput formControlName="nom_jeune" required>
             </mat-form-field>
+    
             <mat-form-field appearance="outline">
                 <mat-label>Mobile</mat-label>
-                <input matInput formControlName="mobile" required>
+                <input matInput formControlName="mobile_jeune" required>
             </mat-form-field>
+    
             <mat-form-field appearance="outline">
                 <mat-label>Fixe</mat-label>
-                <input matInput formControlName="fixe" required>
+                <input matInput formControlName="fixe_jeune" required>
             </mat-form-field>
+    
             <mat-form-field appearance="outline">
                 <mat-label>Mail</mat-label>
-                <input matInput formControlName="mail" required>
+                <input matInput formControlName="mail_jeune" required>
             </mat-form-field>
+    
             <mat-form-field appearance="outline">
                 <mat-label>Adresse</mat-label>
-                <input matInput formControlName="adresse" required>
+                <input matInput formControlName="adresse_jeune" required>
             </mat-form-field>
-            <p>Entered value: {{form.valueChanges | async | json}}</p>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Nom de famille</mat-label>
+                <input matInput formControlName="nom_famille" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Classe</mat-label>
+                <input matInput formControlName="classe" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Scholartité</mat-label>
+                <input matInput formControlName="scholarite" required>
+            </mat-form-field>
         </div>
-
+    
+        <!-- Parent A Section -->
+        <div class="section">
+            <h2>Parent A</h2>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du parent A</mat-label>
+                <input matInput formControlName="nom_parentA" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du parent A</mat-label>
+                <input matInput formControlName="prenom_parentA" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Mobile du parent A</mat-label>
+                <input matInput formControlName="mobile_parentA" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Fixe du parent A</mat-label>
+                <input matInput formControlName="fixe_parentA" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Mail du parent A</mat-label>
+                <input matInput formControlName="mail_parentA" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Adresse du parent A</mat-label>
+                <input matInput formControlName="adresse_parentA" required>
+            </mat-form-field>
+        </div>
+    
+        <!-- Parent B Section -->
+        <div class="section">
+            <h2>Parent B</h2>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du parent B</mat-label>
+                <input matInput formControlName="nom_parentB" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du parent B</mat-label>
+                <input matInput formControlName="prenom_parentB" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Mobile du parent B</mat-label>
+                <input matInput formControlName="mobile_parentB" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Fixe du parent B</mat-label>
+                <input matInput formControlName="fixe_parentB" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Mail du parent B</mat-label>
+                <input matInput formControlName="mail_parentB" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Adresse du parent B</mat-label>
+                <input matInput formControlName="adresse_parentB" required>
+            </mat-form-field>
+        </div>
+    
+        <!-- Prof Principale Section -->
+        <div class="section">
+            <h2>Professeur Principale</h2>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du professeur principale</mat-label>
+                <input matInput formControlName="nom_prof_principale" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du professeur principale</mat-label>
+                <input matInput formControlName="prenom_prof_principale" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Mobile du professeur principale</mat-label>
+                <input matInput formControlName="mobile_prof_principale" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Fixe du professeur principale</mat-label>
+                <input matInput formControlName="fixe_prof_principale" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Mail du professeur principale</mat-label>
+                <input matInput formControlName="mail_prof_principale" required>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline">
+                <mat-label>Adresse du professeur principale</mat-label>
+                <input matInput formControlName="adresse_prof_principale" required>
+            </mat-form-field>
+        </div>
+    
+        <!-- Display Form Value Changes -->
+        <p>Entered value: {{form.valueChanges | async | json}}</p>
     </div>
+    
+    
+
 </div>
