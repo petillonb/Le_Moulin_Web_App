@@ -17,7 +17,7 @@ import { Contact } from '../../entities/contact.entite'
 import { Famille } from '../../entities/famille.entite'
 
 export interface Profile {
-  id?: string
+  id: string
   username: string
   website: string
   avatar_url: string
@@ -27,6 +27,7 @@ export interface Profile {
   providedIn: 'root',
 })
 export class SupabaseService {
+
 
   private supabase: SupabaseClient
   _session: AuthSession | null = null
@@ -82,7 +83,7 @@ export class SupabaseService {
   async fetchJeunesseData(): Promise<Jeune[]> {
     const jeuneAvecIdentiteEtFamilleQuery = await this.supabase
       .from('jeune')
-      .select('id,scholarite,ecole,classe, prof_principale_id(id,nom,prenom,date_naissance,nationalite,genre, contact_id(id,mobile,fixe,mail,adresse)), identite_id (id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),famille_id (id,nom,parentA_id(id,nom,prenom,date_naissance,nationalite,genre, contact_id(id,mobile,fixe,mail,adresse)),parentB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)))')
+      .select('id,scholarite,ecole,classe,scholarite_france, autorisation_photo, autorisation_medical,autorisation_sortie, prof_principale_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)), identite_id (id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),famille_id (id,nom,parentA_id(id,nom,prenom,date_naissance,nationalite,genre, contact_id(id,mobile,fixe,mail,adresse)),parentB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse))), accompagnateurA_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),accompagnateurB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)), urgenceA_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),urgenceB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse))')
     type JeuneAvecIdentiteEtFamille = QueryData<typeof jeuneAvecIdentiteEtFamilleQuery>
 
     const { data, error } = await jeuneAvecIdentiteEtFamilleQuery
@@ -92,10 +93,37 @@ export class SupabaseService {
     return (jeuneAvecIdentiteEtFamille  as Jeune[]);
   }
 
+  async fetchIdentiteData(): Promise<Identite[]> {
+    const IdentiteAvecContactQuery = await this.supabase
+      .from('identite')
+      .select('id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)')
+    type IdentiteAvecContact = QueryData<typeof IdentiteAvecContactQuery>
+
+    const { data, error } = await IdentiteAvecContactQuery
+    if (error) throw error
+    const identiteAvecContact: IdentiteAvecContact = data as IdentiteAvecContact
+
+    return (identiteAvecContact  as Identite[]);
+  }
+
+  async fetchFamilleData(): Promise<Famille[]> {
+    const FamilleAvecParentsQuery = await this.supabase
+      .from('famille')
+      .select('id,nom,parentA_id(id,nom,prenom,date_naissance,nationalite,genre, contact_id(id,mobile,fixe,mail,adresse)),parentB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse))')
+    type FamilleAvecParents = QueryData<typeof FamilleAvecParentsQuery>
+
+    const { data, error } = await FamilleAvecParentsQuery
+    if (error) throw error
+    const familleAvecParents: FamilleAvecParents = data as FamilleAvecParents
+
+    return (familleAvecParents  as Famille[]);
+  }
+
+
   async fetchJeunesseDataById(id: number): Promise<Jeune> {
     const jeuneAvecIdentiteEtFamilleQuery = await this.supabase
     .from('jeune')
-    .select('id,scholarite,ecole,classe, prof_principale_id(id,nom,prenom,date_naissance,nationalite,genre, contact_id(id,mobile,fixe,mail,adresse)), identite_id (id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),famille_id (id,nom,parentA_id(id,nom,prenom,date_naissance,nationalite,genre, contact_id(id,mobile,fixe,mail,adresse)),parentB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)))')
+    .select('id,scholarite,ecole,classe,scholarite_france, autorisation_photo, autorisation_medical,autorisation_sortie, prof_principale_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)), identite_id (id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),famille_id (id,nom,parentA_id(id,nom,prenom,date_naissance,nationalite,genre, contact_id(id,mobile,fixe,mail,adresse)),parentB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse))), accompagnateurA_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),accompagnateurB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)), urgenceA_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse)),urgenceB_id(id,nom,prenom,date_naissance,nationalite,genre,contact_id(id,mobile,fixe,mail,adresse))')
     .eq('id',id)
   type JeuneAvecIdentiteEtFamille = QueryData<typeof jeuneAvecIdentiteEtFamilleQuery>
 
@@ -105,39 +133,36 @@ export class SupabaseService {
 
   return (jeuneAvecIdentiteEtFamille[0]  as Jeune);
   }
-  async fetchActivitéData(): Promise<Activité[]> {
-    const { data, error } = await this.supabase
-      .from('Action')
-      .select<'*', Activité>()
-    console.log("fetchActivitéData", data, error);
-
-    if (error) {
-      console.log(error)
-      return []
-    }
-    return (data);
-  }
-
 
 
   async updateJeunesseData(jeuneData: Jeune) {
-    console.log("saving")
+    console.log("starting");
     const { } = await this.supabase
-      .from('test')
+      .from('jeune')
       .update({ 
         identite_id: jeuneData.identite_id.id,
         ecole: jeuneData.ecole,
-        scholarise: jeuneData.scholarise,
+        scholarite: jeuneData.scholarite,
+        scholarite_france: jeuneData.scholarite_france,
         prof_principale_id: jeuneData.prof_principale_id.id,
         classe: jeuneData.classe,
-        famille_id: jeuneData.famille_id.id
+        famille_id: jeuneData.famille_id.id,
+        autorisation_photo: jeuneData.autorisation_photo,
+        autorisation_medical: jeuneData.autorisation_medical,
+        autorisation_sortie: jeuneData.autorisation_sortie,
+        accompagnateurA_id: jeuneData.accompagnateurA_id.id,
+        accompagnateurB_id: jeuneData.accompagnateurB_id.id,
+        urgenceA_id: jeuneData.urgenceA_id.id,
+        urgenceB_id: jeuneData.urgenceB_id.id
+
       })
       .eq('id', jeuneData.id);
+    console.log("done");
 
   }
   async updateContactData(contactData: Contact) {
     const { } = await this.supabase
-      .from('test')
+      .from('contact')
       .update({
          mobile: contactData.mobile,
          fixe: contactData.fixe,
@@ -148,9 +173,8 @@ export class SupabaseService {
 
   }
   async updateIdentiteData(identiteData: Identite) {
-    console.log("saving")
     const { } = await this.supabase
-      .from('test')
+      .from('identite')
       .update({
         nom: identiteData.nom,
         prenom: identiteData.prenom,
@@ -162,10 +186,10 @@ export class SupabaseService {
       .eq('id', identiteData.id);
 
   }
+
   async updateFamilleData(familleData: Famille) {
-    console.log("saving")
     const { } = await this.supabase
-      .from('test')
+      .from('famille')
       .update({
         nom: familleData.nom,
         parentA_id: familleData.parentA_id.id,
@@ -174,21 +198,100 @@ export class SupabaseService {
       .eq('id', familleData.id);
 
   }
-
-  async insertJeunesseData(jeuneData: Jeune) {
-    console.log("saving")
-    const { } = await this.supabase
-      .from('test')
-      .insert({
-        // firstName: jeuneData.firstName, 
-        // lastName: jeuneData.lastName,
-        // mobile: jeuneData.mobile,
-        // fixe: jeuneData.fixe,
-        // mail: jeuneData.mail,
-        // adresse: jeuneData.adresse
+ 
+  async insertJeunesseData(jeuneData: Jeune): Promise<Jeune> {
+    const jeuneDataQuery= await this.supabase
+      .from('jeune')
+      .insert({ 
+        identite_id: jeuneData.identite_id.id,
+        ecole: jeuneData.ecole,
+        scholarite: jeuneData.scholarite,
+        scholarite_france: jeuneData.scholarite_france,
+        accompagnateurA_id: jeuneData.accompagnateurA_id.id,
+        accompagnateurB_id: jeuneData.accompagnateurB_id.id,
+        urgenceA_id: jeuneData.urgenceA_id.id,
+        urgenceB_id: jeuneData.urgenceB_id.id,
+        prof_principale_id: jeuneData.prof_principale_id.id,
+        classe: jeuneData.classe,
+        famille_id: jeuneData.famille_id.id,
+        autorisation_photo: jeuneData.autorisation_photo,
+        autorisation_medical: jeuneData.autorisation_medical,
+        autorisation_sortie: jeuneData.autorisation_sortie
       })
       .select()
+    type jeuneData= QueryData<typeof jeuneDataQuery>
+    console.log("test")
+    const { data, error } = await jeuneDataQuery
+    if (error) throw error
+    const jeuneAvecIdentiteEtFamille: jeuneData = data as jeuneData
+    console.log("test")
+    return (jeuneAvecIdentiteEtFamille[0]  as Jeune);
 
   }
+  async insertContactData(contactData: Contact): Promise<Contact> {
+    const contactDataQuery= await this.supabase
+      .from('contact')
+      .insert({
+         mobile: contactData.mobile,
+         fixe: contactData.fixe,
+         mail: contactData.mail,
+         adresse: contactData.adresse
+      })
+      .select()
+      type contactData = QueryData<typeof contactDataQuery>
+
+      const { data, error } = await contactDataQuery
+      if (error) throw error
+      const contact: contactData = data as contactData
+  
+      return (contact[0]  as Contact);
+
+  }
+  async insertIdentiteData(identiteData: Identite): Promise<Identite> {
+    const identiteDataQuery= await this.supabase
+      .from('identite')
+      .insert({
+        nom: identiteData.nom,
+        prenom: identiteData.prenom,
+        date_naissance: identiteData.date_naissance,
+        nationalite: identiteData.date_naissance,
+        genre: identiteData.genre,
+        contact_id: identiteData.contact_id.id
+      })
+      .select()
+      type identiteData = QueryData<typeof identiteDataQuery>
+
+      const { data, error } = await identiteDataQuery
+      if (error) throw error
+      const identite: identiteData = data as identiteData
+  
+      return (identite[0]  as Identite);
+
+  }
+
+
+
+  async insertFamilleData(familleData: Famille):Promise<Famille> {
+    const familleDataQuery= await this.supabase
+      .from('famille')
+      .insert({
+        nom: familleData.nom,
+        parentA_id: familleData.parentA_id.id,
+        parentB_id: familleData.parentB_id.id
+      })
+      .select()
+      type familleData = QueryData<typeof familleDataQuery>
+
+      const { data, error } = await familleDataQuery
+      if (error) throw error
+      const famille: familleData = data as familleData
+  
+      return (famille[0]  as Famille);
+
+  }
+
+
+
+  
 
 }

@@ -1,7 +1,7 @@
 export interface Contact{
-  id:number;
-  mobile:string;
-  fixe:string;
-  mail:string;
-  adresse:string;
+  id:any;
+  mobile:any;
+  fixe:any;
+  mail:any;
+  adresse:any;
 }

@@ -37,9 +37,6 @@ export class ActiviteComponent {
   ) { }
 
 
-  async ngOnInit() {
-    this.listOfActivite = await this.supabaseService.fetchActivitéData()
-  } 
 
   displayedColumns: string[] = ['name', 'sector'];
   dataSource = new MatTableDataSource(this.listOfActivite);

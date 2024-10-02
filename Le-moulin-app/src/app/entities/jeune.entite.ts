@@ -4,11 +4,19 @@ import { Identite } from "./identite.entite";
 
 export interface Jeune {
 
-    id:number;
+    id:any;
     identite_id: Identite;
-    scholarise: boolean;
-    ecole: string;
-    classe: string;
+    scholarite: any;
+    scholarite_france: any;
+    accompagnateurA_id: Identite;
+    accompagnateurB_id: Identite;
+    urgenceA_id: Identite;
+    urgenceB_id: Identite;
+    autorisation_photo: any;
+    autorisation_medical: any;
+    autorisation_sortie: any;
+    ecole: any;
+    classe: any;
     prof_principale_id: Identite;
     famille_id: Famille;
    

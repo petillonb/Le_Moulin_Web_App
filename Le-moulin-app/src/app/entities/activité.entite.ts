@@ -1,5 +1,5 @@
 
 export interface Activité {
-    name: string;
-    sector: string;
+    name: undefined;
+    sector: undefined;
   }

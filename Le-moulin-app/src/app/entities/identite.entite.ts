@@ -2,12 +2,12 @@ import { Contact } from "./contact.entite";
 
 
 export interface Identite{
-  id:number;
-  prenom: string;
-  nom: string;
-  date_naissance: Date;
-  nationalite: string;
-  genre: string;
+  id:any;
+  prenom: any;
+  nom: any;
+  date_naissance: any;
+  nationalite: any;
+  genre: any;
   contact_id:Contact;
 }
 
