@@ -274,6 +274,7 @@ export class SupabaseService {
   }
  
   async insertJeunesseData(jeuneData: Jeune): Promise<Jeune> {
+    console.log(jeuneData);
     const jeuneDataQuery= await this.supabase
       .from('jeune')
       .insert({ 
@@ -303,6 +304,7 @@ export class SupabaseService {
 
   }
   async insertContactData(contactData: Contact): Promise<Contact> {
+    console.log(contactData);
     const contactDataQuery= await this.supabase
       .from('contact')
       .insert({
@@ -322,6 +324,7 @@ export class SupabaseService {
 
   }
   async insertIdentiteData(identiteData: Identite): Promise<Identite> {
+    console.log(identiteData);
     const identiteDataQuery= await this.supabase
       .from('identite')
       .insert({

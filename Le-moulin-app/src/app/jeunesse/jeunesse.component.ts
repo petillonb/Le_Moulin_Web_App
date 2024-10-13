@@ -128,7 +128,9 @@ export class JeunesseComponent implements OnInit {
   async createJeune() {
     console.log("create jeune")
     if (this.nomPrenom.value != null) {
+      console.log(this.nomPrenom.value);
       let nomPrenomArray = this.nomPrenom.value.split(" ")
+      console.log(nomPrenomArray);
       let nouveauJeune = {
         id: null,
         ecole: null,
@@ -264,6 +266,7 @@ export class JeunesseComponent implements OnInit {
         },
 
       }
+      console.log(nouveauJeune);
       nouveauJeune.identite_id.contact_id.id = (await this.supabaseService.insertContactData(nouveauJeune.identite_id.contact_id)).id;
       nouveauJeune.identite_id.id = (await this.supabaseService.insertIdentiteData(nouveauJeune.identite_id)).id;
       nouveauJeune.id = (await this.supabaseService.insertJeunesseData(nouveauJeune)).id;
