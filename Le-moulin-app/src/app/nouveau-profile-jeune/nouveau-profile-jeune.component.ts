@@ -1,4 +1,4 @@
-import { CommonModule, AsyncPipe, formatPercent } from '@angular/common';
+import { JsonPipe, CommonModule, AsyncPipe, formatPercent } from '@angular/common';
 import { Component, model, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,8 @@ import { ReactiveFormsModule, FormGroup, FormControl, FormsModule } from '@angul
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Identite } from '../entities/identite.entite';
 import { Famille } from '../entities/famille.entite';
+import {provideNativeDateAdapter} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-nouveau-profile-jeune',
@@ -27,8 +29,10 @@ import { Famille } from '../entities/famille.entite';
     FormsModule,
     MatAutocompleteModule,
     AsyncPipe,
+    MatDatepickerModule,
+    JsonPipe
   ],
-  providers: [SupabaseService],
+  providers: [SupabaseService, provideNativeDateAdapter()],
   templateUrl: './nouveau-profile-jeune.component.html',
   styleUrl: './nouveau-profile-jeune.component.scss'
 })
@@ -298,10 +302,15 @@ export class NouveauProfileJeuneComponent implements OnInit {
       mobile_jeune: new FormControl(''),
       fixe_jeune: new FormControl(''),
       mail_jeune: new FormControl(''),
-      adresse_jeune: new FormControl('')
+      adresse_jeune: new FormControl(''),
+      scholarite: new FormControl (false),
+      scholarite_france: new FormControl (false),
+      autorisation_photo: new FormControl (false),
+      autorisation_medical: new FormControl (false),
+      autorisation_sortie: new FormControl (false)
     });
     this.formJeune.disable();
-
+  
     this.formFamille = new FormGroup({
       nom_famille: new FormControl(''),
     });
@@ -409,7 +418,11 @@ export class NouveauProfileJeuneComponent implements OnInit {
     this.formJeune.patchValue({
       classe: this.jeuneData.classe,
       scholarite: this.jeuneData.scholarite,
-      echole: this.jeuneData.ecole
+      scholarite_france: this.jeuneData.scholarite_france,
+      echole: this.jeuneData.ecole,
+      autorisation_sortie: this.jeuneData.autorisation_sortie,
+      autorisation_medical: this.jeuneData.autorisation_medical,
+      autorisation_photo: this.jeuneData.autorisation_photo
     });
     if (this.jeuneData.identite_id) {
       console.log("patchting formJeuneId");
@@ -814,6 +827,11 @@ export class NouveauProfileJeuneComponent implements OnInit {
     console.log("updating JeuneData");
     this.jeuneData.classe = this.formJeune.controls['classe'].value;
     this.jeuneData.ecole = this.formJeune.controls['ecole'].value;
+    this.jeuneData.scholarite = this.formJeune.controls['scholarite'].value;
+    this.jeuneData.scholarite_france = this.formJeune.controls['scholarite_france'].value;
+    this.jeuneData.autorisation_medical = this.formJeune.controls['autorisation_medical'].value;
+    this.jeuneData.autorisation_photo = this.formJeune.controls['autorisation_photo'].value;
+    this.jeuneData.autorisation_sortie = this.formJeune.controls['autorisation_sortie'].value;
     if (this.jeuneData.identite_id) {
       console.log("updating JeuneIdData");
       // Update only the values in identite_id that are managed by the form

@@ -1,5 +1,5 @@
 import { JsonPipe, CommonModule, AsyncPipe, formatPercent } from '@angular/common';
-import { Component, model, OnInit, ElementRef, ViewChild,ChangeDetectionStrategy,inject, computed} from '@angular/core';
+import { Component, model, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -8,13 +8,16 @@ import { SupabaseService } from '../common/supabase/supabase.service';
 import { Jeune } from '../entities/jeune.entite';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule, FormGroup, FormControl, FormsModule,FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, FormsModule, FormBuilder } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Identite } from '../entities/identite.entite';
 import { Famille } from '../entities/famille.entite';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatCardModule} from '@angular/material/card';
-import {MatRadioModule} from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+
 
 
 
@@ -35,9 +38,10 @@ import {MatRadioModule} from '@angular/material/radio';
     AsyncPipe,
     MatCheckboxModule,
     MatCardModule,
-    JsonPipe
+    JsonPipe,
+    MatDatepickerModule
   ],
-  providers: [SupabaseService],
+  providers: [SupabaseService, provideNativeDateAdapter()],
   templateUrl: './profile-jeune.component.html',
   styleUrl: './profile-jeune.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,15 +58,15 @@ export class ProfileJeuneComponent implements OnInit {
   optionsIdentite: string[] = [''];
   filteredOptionsIdentite: string[];
   optionsFamille: string[] = [''];
-  
-  filteredOptionsFamille: string[];
-  
-  
-  
 
-  
-  
-  
+  filteredOptionsFamille: string[];
+
+
+
+
+
+
+
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -70,25 +74,25 @@ export class ProfileJeuneComponent implements OnInit {
   ) {
     this.filteredOptionsIdentite = this.optionsIdentite.slice();
     this.filteredOptionsFamille = this.optionsFamille.slice();
-    
+
   }
   filterParentA(): void {
     const filterParentAValue = this.inputParentA.nativeElement.value.toLowerCase();
     this.filteredOptionsIdentite = this.optionsIdentite.filter(o => o.toLowerCase().includes(filterParentAValue));
     this.addParentA(this.inputParentA.nativeElement.value);
-    
+
   }
   filterParentB(): void {
     const filterParentBValue = this.inputParentB.nativeElement.value.toLowerCase();
     this.filteredOptionsIdentite = this.optionsIdentite.filter(o => o.toLowerCase().includes(filterParentBValue));
     this.addParentB(this.inputParentB.nativeElement.value);
-    
+
   }
   filterAccompagnateurA(): void {
     const filterAccompagnateurAValue = this.inputAccompagnateurA.nativeElement.value.toLowerCase();
     this.filteredOptionsIdentite = this.optionsIdentite.filter(o => o.toLowerCase().includes(filterAccompagnateurAValue));
     this.addAccompagnateurA(this.inputAccompagnateurA.nativeElement.value);
-    
+
   }
   filterAccompagnateurB(): void {
     const filterAccompagnateurBValue = this.inputAccompagnateurB.nativeElement.value.toLowerCase();
@@ -119,17 +123,10 @@ export class ProfileJeuneComponent implements OnInit {
     this.addFamille(this.inputFamille.nativeElement.value);
   }
 
-  private readonly _formBuilder = inject(FormBuilder);
 
-  readonly toppings = this._formBuilder.group({
-    scholarite: false,
-    scholarite_france: false,
-  });
-  
- 
+
   identiteList: Identite[];
   familleList: Famille[];
-  jeuneDummy: Jeune;
   jeuneData: Jeune;
   jeuneOriginalData: Jeune;
 
@@ -141,6 +138,7 @@ export class ProfileJeuneComponent implements OnInit {
   AccompagnateurBControl = new FormControl('');
   UrgenceAControl = new FormControl('');
   UrgenceBControl = new FormControl('');
+
 
   formJeune: FormGroup;
   jeuneEditMode = false;
@@ -156,7 +154,7 @@ export class ProfileJeuneComponent implements OnInit {
 
   formProf: FormGroup;
   profEditMode = false;
-  
+
   formAccompagnateurA: FormGroup;
   accompagnateurAEditMode = false;
 
@@ -173,7 +171,7 @@ export class ProfileJeuneComponent implements OnInit {
   id: number;
   ngOnInit() {
 
-    this.jeuneDummy = {
+    this.jeuneData = {
       id: null,
       ecole: null,
       classe: null,
@@ -182,7 +180,7 @@ export class ProfileJeuneComponent implements OnInit {
       autorisation_medical: null,
       autorisation_photo: null,
       autorisation_sortie: null,
-      accompagnateurA_id:{
+      accompagnateurA_id: {
         id: null,
         nom: null,
         prenom: null,
@@ -197,7 +195,7 @@ export class ProfileJeuneComponent implements OnInit {
           adresse: null,
         },
       },
-      accompagnateurB_id:{
+      accompagnateurB_id: {
         id: null,
         nom: null,
         prenom: null,
@@ -212,7 +210,7 @@ export class ProfileJeuneComponent implements OnInit {
           adresse: null,
         },
       },
-      urgenceA_id:{
+      urgenceA_id: {
         id: null,
         nom: null,
         prenom: null,
@@ -227,7 +225,7 @@ export class ProfileJeuneComponent implements OnInit {
           adresse: null,
         },
       },
-      urgenceB_id:{
+      urgenceB_id: {
         id: null,
         nom: null,
         prenom: null,
@@ -309,18 +307,24 @@ export class ProfileJeuneComponent implements OnInit {
 
     }
 
+
     this.formJeune = new FormGroup({
       ecole: new FormControl(''),
       classe: new FormControl(''),
       nom_jeune: new FormControl(''),
       prenom_jeune: new FormControl(''),
-      date_naissance_jeune: new FormControl(''),
       nationalite_jeune: new FormControl(''),
+      date_naissance_jeune: new FormControl<Date | null>(null),
       genre_jeune: new FormControl(''),
       mobile_jeune: new FormControl(''),
       fixe_jeune: new FormControl(''),
       mail_jeune: new FormControl(''),
-      adresse_jeune: new FormControl('')
+      adresse_jeune: new FormControl(''),
+      scholarite: new FormControl(false),
+      scholarite_france: new FormControl(false),
+      autorisation_photo: new FormControl(false),
+      autorisation_medical: new FormControl(false),
+      autorisation_sortie: new FormControl(false)
     });
     this.formJeune.disable();
 
@@ -391,52 +395,59 @@ export class ProfileJeuneComponent implements OnInit {
       fixe_urgenceB: new FormControl(''),
     });
     this.formUrgenceB.disable();
-    
-    
+
+
 
     console.log("00");
-    this.route.params.subscribe(async (params) => {
+    this.route.params.subscribe(async (params) => { 
       this.identiteList = await this.supabaseService.fetchIdentiteData();
       this.familleList = await this.supabaseService.fetchFamilleData();
       this.jeuneOriginalData = await this.supabaseService.fetchJeunesseDataById(params['id']);
+      this.mergeJeuneData();
       console.log("jeune fetched", this.jeuneOriginalData);
-      this.jeuneData = structuredClone(this.jeuneOriginalData);
+      console.log("jeune created", this.jeuneData);
+      console.log("jeune merged", this.jeuneData);
+
       this.patchValue();
       this.id = params['id'];
       this.fillIdentiteOptionList();
       this.fillFamilleOptionList();
 
     })
-    
+
   }
-  fillFamilleOptionList(){
+  fillFamilleOptionList() {
     for (let i = 0; i < this.optionsFamille.length; i++) {
       this.optionsFamille.pop();
     }
     for (let i = 0; i < this.familleList.length; i++) {
       console.log(this.familleList[i].nom);
-      this.optionsFamille.push(this.familleList[i].nom );
+      this.optionsFamille.push(this.familleList[i].nom);
     }
     console.log(this.optionsFamille);
 
   }
 
-  fillIdentiteOptionList(){
+  fillIdentiteOptionList() {
     for (let i = 0; i < this.optionsIdentite.length; i++) {
       this.optionsIdentite.pop();
     }
     for (let i = 0; i < this.identiteList.length; i++) {
       this.optionsIdentite.push(this.identiteList[i].nom + " " + this.identiteList[i].prenom);
     }
-    
+
   }
 
   patchValue() {
-    console.log("patchting value");
+    console.log("patchting value 1");
     this.formJeune.patchValue({
       classe: this.jeuneData.classe,
       scholarite: this.jeuneData.scholarite,
-      echole: this.jeuneData.ecole
+      scholarite_france: this.jeuneData.scholarite_france,
+      echole: this.jeuneData.ecole,
+      autorisation_sortie: this.jeuneData.autorisation_sortie,
+      autorisation_medical: this.jeuneData.autorisation_medical,
+      autorisation_photo: this.jeuneData.autorisation_photo
     });
     if (this.jeuneData.identite_id) {
       this.formJeune.patchValue({
@@ -519,7 +530,7 @@ export class ProfileJeuneComponent implements OnInit {
         this.formAccompagnateurA.patchValue({
           mobile_accompagnateurA: this.jeuneData.accompagnateurA_id.contact_id.mobile,
           fixe_accompagnateurA: this.jeuneData.accompagnateurA_id.contact_id.fixe
-         
+
         })
       }
     }
@@ -535,7 +546,7 @@ export class ProfileJeuneComponent implements OnInit {
         this.formAccompagnateurB.patchValue({
           mobile_accompagnateurB: this.jeuneData.accompagnateurB_id.contact_id.mobile,
           fixe_accompagnateurB: this.jeuneData.accompagnateurB_id.contact_id.fixe
-         
+
         })
       }
     }
@@ -551,7 +562,7 @@ export class ProfileJeuneComponent implements OnInit {
         this.formUrgenceA.patchValue({
           mobile_urgenceA: this.jeuneData.urgenceA_id.contact_id.mobile,
           fixe_urgenceA: this.jeuneData.urgenceA_id.contact_id.fixe
-         
+
         })
       }
     }
@@ -567,7 +578,7 @@ export class ProfileJeuneComponent implements OnInit {
         this.formUrgenceB.patchValue({
           mobile_urgenceB: this.jeuneData.urgenceB_id.contact_id.mobile,
           fixe_urgenceB: this.jeuneData.urgenceB_id.contact_id.fixe
-         
+
         })
       }
     }
@@ -595,22 +606,27 @@ export class ProfileJeuneComponent implements OnInit {
     }
   }
   toggleParentAEditMode() {
-    this.parentAEditMode = !this.parentAEditMode;
-    if (this.parentAEditMode) {
-      this.formParentA.enable();
-    } else {
-      this.formParentA.disable();
-      this.resetData();
+    if (this.jeuneData.famille_id.id != null) {
+      this.parentAEditMode = !this.parentAEditMode;
+      if (this.parentAEditMode) {
+        this.formParentA.enable();
+      } else {
+        this.formParentA.disable();
+        this.resetData();
+      }
     }
   }
   toggleParentBEditMode() {
-    this.parentBEditMode = !this.parentBEditMode;
-    if (this.parentBEditMode) {
-      this.formParentB.enable();
-    } else {
-      this.formParentB.disable();
-      this.resetData();
+    if (this.jeuneData.famille_id.id != null) {
+      this.parentBEditMode = !this.parentBEditMode;
+      if (this.parentBEditMode) {
+        this.formParentB.enable();
+      } else {
+        this.formParentB.disable();
+        this.resetData();
+      }
     }
+
   }
   toggleAccompagnateurAEditMode() {
     this.accompagnateurAEditMode = !this.accompagnateurAEditMode;
@@ -667,7 +683,7 @@ export class ProfileJeuneComponent implements OnInit {
     this.patchValue();
   }
   async updateJeuneTable() {
-    if(this.jeuneOriginalData.id == null){
+    if (this.jeuneOriginalData.id == null) {
       console.log("inserting table Jeune id+contact+jeune");
       this.jeuneData.identite_id.contact_id.id = (await this.supabaseService.insertContactData(this.jeuneData.identite_id.contact_id)).id;
       this.jeuneData.identite_id.id = (await this.supabaseService.insertIdentiteData(this.jeuneData.identite_id)).id;
@@ -781,6 +797,8 @@ export class ProfileJeuneComponent implements OnInit {
     if (this.jeuneData.famille_id.id == null) {
       console.log("inserting table famille");
       this.jeuneData.famille_id.id = (await this.supabaseService.insertFamilleData(this.jeuneData.famille_id)).id;
+      this.parentAControl.enable();
+      this.parentBControl.enable();
     }
     console.log("updating table famille && table jeune");
     this.supabaseService.updateFamilleData(this.jeuneData.famille_id);
@@ -824,15 +842,23 @@ export class ProfileJeuneComponent implements OnInit {
 
   updateJeuneData() {
 
-    console.log("updating data");
+    console.log("updating data 1");
     this.jeuneData.classe = this.formJeune.controls['classe'].value;
     this.jeuneData.ecole = this.formJeune.controls['ecole'].value;
+    this.jeuneData.scholarite = this.formJeune.controls['scholarite'].value;
+    this.jeuneData.scholarite_france = this.formJeune.controls['scholarite_france'].value;
+    this.jeuneData.autorisation_medical = this.formJeune.controls['autorisation_medical'].value;
+    this.jeuneData.autorisation_photo = this.formJeune.controls['autorisation_photo'].value;
+    this.jeuneData.autorisation_sortie = this.formJeune.controls['autorisation_sortie'].value;
 
+
+    console.log(this.jeuneData);
     if (this.jeuneData.identite_id) {
       // Update only the values in identite_id that are managed by the form
       this.jeuneData.identite_id.nom = this.formJeune.controls['nom_jeune'].value;
       this.jeuneData.identite_id.prenom = this.formJeune.controls['prenom_jeune'].value;
       this.jeuneData.identite_id.date_naissance = this.formJeune.controls['date_naissance_jeune'].value;
+
       this.jeuneData.identite_id.nationalite = this.formJeune.controls['nationalite_jeune'].value;
       this.jeuneData.identite_id.genre = this.formJeune.controls['genre_jeune'].value;
       if (this.jeuneData.identite_id.contact_id) {
@@ -841,15 +867,8 @@ export class ProfileJeuneComponent implements OnInit {
         this.jeuneData.identite_id.contact_id.mail = this.formJeune.controls['mail_jeune'].value;
         this.jeuneData.identite_id.contact_id.adresse = this.formJeune.controls['adresse_jeune'].value;
       }
-      else {
-        this.jeuneData.identite_id.contact_id = this.jeuneDummy.identite_id.contact_id;
-      }
     }
-    else {
-      this.jeuneData.identite_id = this.jeuneDummy.identite_id;
-
-    }
-
+    console.log("updating data 2");
     if (this.jeuneData.famille_id) {
       this.jeuneData.famille_id.nom = this.formFamille.controls['nom_famille'].value;
       if (this.jeuneData.famille_id.parentA_id) {
@@ -861,13 +880,9 @@ export class ProfileJeuneComponent implements OnInit {
           this.jeuneData.famille_id.parentA_id.contact_id.mail = this.formParentA.controls['mail_parentA'].value;
           this.jeuneData.famille_id.parentA_id.contact_id.adresse = this.formParentA.controls['adresse_parentA'].value;
         }
-        else {
-          this.jeuneData.famille_id.parentA_id.contact_id = this.jeuneDummy.famille_id.parentA_id.contact_id;
-        }
+
       }
-      else {
-        this.jeuneData.famille_id.parentA_id = this.jeuneDummy.famille_id.parentA_id;
-      }
+
       if (this.jeuneData.famille_id.parentB_id) {
         this.jeuneData.famille_id.parentB_id.nom = this.formParentB.controls['nom_parentB'].value;
         this.jeuneData.famille_id.parentB_id.prenom = this.formParentB.controls['prenom_parentB'].value;
@@ -877,16 +892,9 @@ export class ProfileJeuneComponent implements OnInit {
           this.jeuneData.famille_id.parentB_id.contact_id.mail = this.formParentB.controls['mail_parentB'].value;
           this.jeuneData.famille_id.parentB_id.contact_id.adresse = this.formParentB.controls['adresse_parentB'].value;
         }
-        else {
-          this.jeuneData.famille_id.parentB_id.contact_id = this.jeuneDummy.famille_id.parentB_id.contact_id;
-        }
+
       }
-      else {
-        this.jeuneData.famille_id.parentB_id = this.jeuneDummy.famille_id.parentB_id;
-      }
-    }
-    else {
-      this.jeuneData.famille_id = this.jeuneDummy.famille_id;
+
     }
     if (this.jeuneData.prof_principale_id) {
       this.jeuneData.prof_principale_id.nom = this.formProf.controls['nom_prof_principale'].value;
@@ -897,13 +905,10 @@ export class ProfileJeuneComponent implements OnInit {
         this.jeuneData.prof_principale_id.contact_id.mail = this.formProf.controls['mail_prof_principale'].value;
         this.jeuneData.prof_principale_id.contact_id.adresse = this.formProf.controls['adresse_prof_principale'].value;
       }
-      else {
-        this.jeuneData.prof_principale_id.contact_id = this.jeuneDummy.prof_principale_id.contact_id;
-      }
+
     }
-    else {
-      this.jeuneData.prof_principale_id = this.jeuneDummy.prof_principale_id;
-    }
+
+    console.log("updating data 3");
     if (this.jeuneData.accompagnateurA_id) {
       this.jeuneData.accompagnateurA_id.nom = this.formAccompagnateurA.controls['nom_accompagnateurA'].value;
       this.jeuneData.accompagnateurA_id.prenom = this.formAccompagnateurA.controls['prenom_accompagnateurA'].value;
@@ -911,13 +916,10 @@ export class ProfileJeuneComponent implements OnInit {
         this.jeuneData.accompagnateurA_id.contact_id.mobile = this.formAccompagnateurA.controls['mobile_accompagnateurA'].value;
         this.jeuneData.accompagnateurA_id.contact_id.fixe = this.formAccompagnateurA.controls['fixe_accompagnateurA'].value;
       }
-      else {
-        this.jeuneData.accompagnateurA_id.contact_id = this.jeuneDummy.accompagnateurA_id.contact_id;
-      }
+
     }
-    else {
-      this.jeuneData.accompagnateurA_id = this.jeuneDummy.accompagnateurA_id;
-    }
+
+    console.log("updating data 4");
     if (this.jeuneData.accompagnateurB_id) {
       this.jeuneData.accompagnateurB_id.nom = this.formAccompagnateurB.controls['nom_accompagnateurB'].value;
       this.jeuneData.accompagnateurB_id.prenom = this.formAccompagnateurB.controls['prenom_accompagnateurB'].value;
@@ -925,13 +927,9 @@ export class ProfileJeuneComponent implements OnInit {
         this.jeuneData.accompagnateurB_id.contact_id.mobile = this.formAccompagnateurB.controls['mobile_accompagnateurB'].value;
         this.jeuneData.accompagnateurB_id.contact_id.fixe = this.formAccompagnateurB.controls['fixe_accompagnateurB'].value;
       }
-      else {
-        this.jeuneData.accompagnateurB_id.contact_id = this.jeuneDummy.accompagnateurB_id.contact_id;
-      }
+
     }
-    else {
-      this.jeuneData.accompagnateurB_id = this.jeuneDummy.accompagnateurB_id;
-    }
+
     if (this.jeuneData.urgenceA_id) {
       this.jeuneData.urgenceA_id.nom = this.formUrgenceA.controls['nom_urgenceA'].value;
       this.jeuneData.urgenceA_id.prenom = this.formUrgenceA.controls['prenom_urgenceA'].value;
@@ -939,13 +937,9 @@ export class ProfileJeuneComponent implements OnInit {
         this.jeuneData.urgenceA_id.contact_id.mobile = this.formUrgenceA.controls['mobile_urgenceA'].value;
         this.jeuneData.urgenceA_id.contact_id.fixe = this.formUrgenceA.controls['fixe_urgenceA'].value;
       }
-      else {
-        this.jeuneData.urgenceA_id.contact_id = this.jeuneDummy.urgenceA_id.contact_id;
-      }
+
     }
-    else {
-      this.jeuneData.urgenceA_id = this.jeuneDummy.urgenceA_id;
-    }
+
     if (this.jeuneData.urgenceB_id) {
       this.jeuneData.urgenceB_id.nom = this.formUrgenceB.controls['nom_urgenceB'].value;
       this.jeuneData.urgenceB_id.prenom = this.formUrgenceB.controls['prenom_urgenceB'].value;
@@ -953,12 +947,7 @@ export class ProfileJeuneComponent implements OnInit {
         this.jeuneData.urgenceB_id.contact_id.mobile = this.formUrgenceB.controls['mobile_urgenceB'].value;
         this.jeuneData.urgenceB_id.contact_id.fixe = this.formUrgenceB.controls['fixe_urgenceB'].value;
       }
-      else {
-        this.jeuneData.urgenceB_id.contact_id = this.jeuneDummy.urgenceB_id.contact_id;
-      }
-    }
-    else {
-      this.jeuneData.urgenceB_id = this.jeuneDummy.urgenceB_id;
+
     }
     // Update only prof_principale_id fields that are managed by the form
 
@@ -997,7 +986,7 @@ export class ProfileJeuneComponent implements OnInit {
     this.accompagnateurAEditMode = !this.accompagnateurAEditMode;
     this.formAccompagnateurA.disable();
     this.jeuneOriginalData.accompagnateurA_id = this.jeuneData.accompagnateurA_id;
-  
+
   }
   saveAccompagnateurBData() {
     console.log("saving AccompagnateurB");
@@ -1064,7 +1053,7 @@ export class ProfileJeuneComponent implements OnInit {
     this.parentBEditMode = !this.parentBEditMode;
     this.formParentB.disable();
     this.jeuneOriginalData.famille_id.parentB_id = this.jeuneData.famille_id.parentB_id;
-    
+
   }
 
 
@@ -1131,8 +1120,8 @@ export class ProfileJeuneComponent implements OnInit {
   }
 
   addFamille(inputFamille: string) {
-    for(let i = 0; i < this.familleList.length;i++){
-      if(this.familleList[i].nom == inputFamille){
+    for (let i = 0; i < this.familleList.length; i++) {
+      if (this.familleList[i].nom == inputFamille) {
         this.jeuneData.famille_id = this.familleList[i];
         this.jeuneOriginalData.famille_id = this.familleList[i];
         this.updateJeuneFamilleTable();
@@ -1195,7 +1184,7 @@ export class ProfileJeuneComponent implements OnInit {
       }
     }
   }
-  
+
   addUrgenceB(inputNomPrenom: string) {
     console.log("checking name");
     let nomPrenom = inputNomPrenom.split(" ");
@@ -1214,6 +1203,97 @@ export class ProfileJeuneComponent implements OnInit {
     }
   }
 
+  mergeJeuneData() {
+    if (this.jeuneOriginalData.identite_id) {
+      if (this.jeuneOriginalData.identite_id.contact_id) {
+        this.jeuneOriginalData.identite_id.contact_id = this.jeuneData.identite_id.contact_id;
+      } else {
+        this.jeuneOriginalData.identite_id.contact_id = this.jeuneData.identite_id.contact_id;
+      }
+    } else {
+      this.jeuneOriginalData.identite_id = this.jeuneData.identite_id;
+    }
+  
+    if (this.jeuneOriginalData.accompagnateurA_id) {
+      if (this.jeuneOriginalData.accompagnateurA_id.contact_id) {
+        this.jeuneOriginalData.accompagnateurA_id.contact_id = this.jeuneData.accompagnateurA_id.contact_id;
+      } else {
+        this.jeuneOriginalData.accompagnateurA_id.contact_id = this.jeuneData.accompagnateurA_id.contact_id;
+      }
+    } else {
+      this.jeuneOriginalData.accompagnateurA_id = this.jeuneData.accompagnateurA_id;
+    }
+  
+    if (this.jeuneOriginalData.accompagnateurB_id) {
+      if (this.jeuneOriginalData.accompagnateurB_id.contact_id) {
+        this.jeuneOriginalData.accompagnateurB_id.contact_id = this.jeuneData.accompagnateurB_id.contact_id;
+      } else {
+        this.jeuneOriginalData.accompagnateurB_id.contact_id = this.jeuneData.accompagnateurB_id.contact_id;
+      }
+    } else {
+      this.jeuneOriginalData.accompagnateurB_id = this.jeuneData.accompagnateurB_id;
+    }
+  
+    if (this.jeuneOriginalData.urgenceA_id) {
+      if (this.jeuneOriginalData.urgenceA_id.contact_id) {
+        this.jeuneOriginalData.urgenceA_id.contact_id = this.jeuneData.urgenceA_id.contact_id;
+      } else {
+        this.jeuneOriginalData.urgenceA_id.contact_id = this.jeuneData.urgenceA_id.contact_id;
+      }
+    } else {
+      this.jeuneOriginalData.urgenceA_id = this.jeuneData.urgenceA_id;
+    }
+  
+    if (this.jeuneOriginalData.urgenceB_id) {
+      if (this.jeuneOriginalData.urgenceB_id.contact_id) {
+        this.jeuneOriginalData.urgenceB_id.contact_id = this.jeuneData.urgenceB_id.contact_id;
+      } else {
+        this.jeuneOriginalData.urgenceB_id.contact_id = this.jeuneData.urgenceB_id.contact_id;
+      }
+    } else {
+      this.jeuneOriginalData.urgenceB_id = this.jeuneData.urgenceB_id;
+    }
+  
+    if (this.jeuneOriginalData.famille_id) {
+      if (this.jeuneOriginalData.famille_id.parentA_id) {
+        if (this.jeuneOriginalData.famille_id.parentA_id.contact_id) {
+          this.jeuneOriginalData.famille_id.parentA_id.contact_id = this.jeuneData.famille_id.parentA_id.contact_id;
+        } else {
+          this.jeuneOriginalData.famille_id.parentA_id.contact_id = this.jeuneData.famille_id.parentA_id.contact_id;
+        }
+      } else {
+        this.jeuneOriginalData.famille_id.parentA_id = this.jeuneData.famille_id.parentA_id;
+      }
+  
+      if (this.jeuneOriginalData.famille_id.parentB_id) {
+        if (this.jeuneOriginalData.famille_id.parentB_id.contact_id) {
+          this.jeuneOriginalData.famille_id.parentB_id.contact_id = this.jeuneData.famille_id.parentB_id.contact_id;
+        } else {
+          this.jeuneOriginalData.famille_id.parentB_id.contact_id = this.jeuneData.famille_id.parentB_id.contact_id;
+        }
+      } else {
+        this.jeuneOriginalData.famille_id.parentB_id = this.jeuneData.famille_id.parentB_id;
+      }
+    } else {
+      this.parentAControl.disable();
+      this.parentBControl.disable();
+      this.jeuneOriginalData.famille_id = this.jeuneData.famille_id;
+    }
+  
+    if (this.jeuneOriginalData.prof_principale_id) {
+      if (this.jeuneOriginalData.prof_principale_id.contact_id) {
+        this.jeuneOriginalData.prof_principale_id.contact_id = this.jeuneData.prof_principale_id.contact_id;
+      } else {
+        this.jeuneOriginalData.prof_principale_id.contact_id = this.jeuneData.prof_principale_id.contact_id;
+      }
+    } else {
+      this.jeuneOriginalData.prof_principale_id = this.jeuneData.prof_principale_id;
+    }
+  
+    // Merging root-level fields
+    this.jeuneData = this.jeuneOriginalData;
+  }
+  
 
   goBack() {
     this.router.navigate(['jeunesse']);
@@ -1221,3 +1301,4 @@ export class ProfileJeuneComponent implements OnInit {
 
 
 }
+

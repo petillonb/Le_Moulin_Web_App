@@ -100,11 +100,26 @@
             <mat-label>Adresse</mat-label>
             <input matInput formControlName="adresse_jeune" required>
         </mat-form-field>
+        <section class="example-section" [formGroup]="formJeune">
+            <p><mat-checkbox formControlName="scholarite">Scholarisé</mat-checkbox></p>
+            <p><mat-checkbox formControlName="scholarite_france" >En France</mat-checkbox></p>
+        </section>
 
         <mat-form-field appearance="outline">
             <mat-label>Classe</mat-label>
             <input matInput formControlName="classe" required>
         </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Ecole</mat-label>
+            <input matInput formControlName="ecole" required>
+        </mat-form-field>
+
+        <section class="example-section" [formGroup]="formJeune">
+            <p><mat-checkbox formControlName="autorisation_photo">Autorisation photo</mat-checkbox></p>
+            <p><mat-checkbox formControlName="autorisation_medical" >Autorisation medical</mat-checkbox></p>
+            <p><mat-checkbox formControlName="autorisation_sortie" >Autorisation sortie</mat-checkbox></p>
+        </section>
+
 
     </div>
     <div [formGroup]="formParentA">

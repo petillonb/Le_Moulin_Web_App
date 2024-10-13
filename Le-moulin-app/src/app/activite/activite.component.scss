@@ -1,0 +1,22 @@
+.button-container {
+    display: flex;
+ /* Add some space between the button and the table */
+    margin-left: auto; /* Push the button to the right */
+    justify-content: flex-end;
+  }
+
+  .select-column {
+    width: 15%; /* Adjust the width to your preference */
+    justify-content: space-between; 
+    text-align: right; /* Center the checkbox */
+    padding: 0; /* Remove padding for more compact styling */
+  }
+
+  .table {
+    width: 100%;
+
+  }
+
+  .filterForm{
+    width: 100%;
+  }

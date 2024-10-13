@@ -4,6 +4,7 @@ import { HomepageComponent } from './homepage/homepage.component';
 import { JeunesseComponent } from './jeunesse/jeunesse.component';
 import { NouveauProfileJeuneComponent } from './nouveau-profile-jeune/nouveau-profile-jeune.component';
 import { ProfileJeuneComponent } from './profile-jeune/profile-jeune.component';
+import { ActivitePageComponent } from './activite-page/activite-page.component';
 
 export const routes: Routes = [
 
@@ -17,6 +18,13 @@ export const routes: Routes = [
             { path: '', redirectTo: 'list', pathMatch: 'full' },
         ]
     },
-    { path: 'activités', component: ActiviteComponent },
+    { 
+        path: 'activités', children:[
+            { path: 'list', component: ActiviteComponent },
+            { path: ':id', component: ActivitePageComponent },
+            { path: '', redirectTo: 'list', pathMatch: 'full' },
+
+        ] 
+    },
     
 ];

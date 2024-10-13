@@ -21,8 +21,22 @@
     width: 100%;
   }
 
-  td, th {
+  .normal-column {
     width: 25%;
   }
+  .select-column {
+    width: 15%; /* Adjust the width to your preference */
+    justify-content: space-between; 
+    text-align: right; /* Center the checkbox */
+    padding: 0; /* Remove padding for more compact styling */
+  }
   
+  .button-container {
+    display: flex;
+    margin-left: auto; /* Push the button to the right */
+    justify-content: flex-end;
+  }
   
+  .form-nom{
+    width: 25%;
+  }

@@ -9,33 +9,6 @@
 
 </div>
 <div class="profile-content">
-    <div [formGroup]="formFamille">
-        <h2>Famille</h2>
-        <form class="formFamille">
-            <mat-form-field class="example-full-width">
-                <mat-label>Nom de Famille</mat-label>
-                <input #inputFamille type="text" placeholder="Pick one" matInput [formControl]="familleControl"
-                    [matAutocomplete]="familleAuto" (input)="filterFamille()" (focus)="filterFamille()">
-                <mat-autocomplete requireSelection #familleAuto="matAutocomplete">
-                    @for (option of filteredOptionsFamille; track option) {
-                    <mat-option [value]="option">{{option}}</mat-option>
-                    }
-                </mat-autocomplete>
-            </mat-form-field>
-            <button mat-button (click)="toggleFamilleEditMode()">
-                <mat-icon>edit</mat-icon>
-                <span *ngIf="!familleEditMode">Editer</span>
-                <span *ngIf="familleEditMode">Annuler</span>
-            </button>
-            <button mat-button (click)="saveFamilleData()">
-                <span *ngIf="familleEditMode">Sauvegarder</span>
-            </button>
-        </form>
-        <mat-form-field appearance="outline">
-            <mat-label>Nom de famille</mat-label>
-            <input matInput formControlName="nom_famille" required>
-        </mat-form-field>
-    </div>
     <!-- Jeune Info Section -->
     <div [formGroup]="formJeune">
         <button mat-button (click)="toggleJeuneEditMode()">
@@ -43,66 +16,66 @@
             <span *ngIf="!jeuneEditMode">Editer</span>
             <span *ngIf="jeuneEditMode">Annuler</span>
         </button>
-        <button mat-button (click)="saveJeuneData()">
-            <span *ngIf="jeuneEditMode">Sauvegarder</span>
+        <button *ngIf="jeuneEditMode" mat-button (click)="saveJeuneData()">
+            <span >Sauvegarder</span>
         </button>
         <h2>Jeune Info</h2>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom</mat-label>
-            <input matInput formControlName="prenom_jeune" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Nom</mat-label>
-            <input matInput formControlName="nom_jeune" required>
-        </mat-form-field>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom</mat-label>
+                <input matInput formControlName="prenom_jeune" required>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Nom</mat-label>
+                <input matInput formControlName="nom_jeune" required>
+            </mat-form-field>
+        </div>
 
         <mat-form-field appearance="outline">
             <mat-label>Nationalité</mat-label>
             <input matInput formControlName="nationalite_jeune" required>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Date de naissance</mat-label>
-            <input matInput formControlName="date_naissance_jeune" required>
+        <mat-form-field class="date-picker-field">
+            <mat-label>Date de Naissance</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="date_naissance_jeune" required>
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
+
 
         <mat-form-field appearance="outline">
             <mat-label>Genre</mat-label>
             <input matInput formControlName="genre_jeune" required>
         </mat-form-field>
 
-
-        <mat-form-field appearance="outline">
-            <mat-label>Mobile</mat-label>
-            <input matInput formControlName="mobile_jeune" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Fixe</mat-label>
-            <input matInput formControlName="fixe_jeune" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Mail</mat-label>
-            <input matInput formControlName="mail_jeune" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Adresse</mat-label>
-            <input matInput formControlName="adresse_jeune" required>
-        </mat-form-field>
-        <section class="example-section" [formGroup]="toppings">
-            <h4>Select your toppings:</h4>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Mobile</mat-label>
+                <input matInput formControlName="mobile_jeune" required>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Fixe</mat-label>
+                <input matInput formControlName="fixe_jeune" required>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Mail</mat-label>
+                <input matInput formControlName="mail_jeune" required>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Adresse</mat-label>
+                <input matInput formControlName="adresse_jeune" required>
+            </mat-form-field>
+        </div>
+        <section class="example-section" [formGroup]="formJeune">
             <p><mat-checkbox formControlName="scholarite">Scholarisé</mat-checkbox></p>
             <p><mat-checkbox formControlName="scholarite_france">En France</mat-checkbox></p>
-          </section>
-          
-          <section class="example-section" [formGroup]="toppings">
-            <h4>You chose:</h4>
-            {{toppings.value | json}}
-          </section>
+        </section>
         <mat-form-field appearance="outline">
             <mat-label>Classe</mat-label>
             <input matInput formControlName="classe" required>
@@ -111,8 +84,42 @@
             <mat-label>Ecole</mat-label>
             <input matInput formControlName="ecole" required>
         </mat-form-field>
-
-
+        
+        <section class="example-section" [formGroup]="formJeune">
+            <p><mat-checkbox formControlName="autorisation_photo">Autorisation photo</mat-checkbox></p>
+            <p><mat-checkbox formControlName="autorisation_medical">Autorisation medical</mat-checkbox></p>
+            <p><mat-checkbox formControlName="autorisation_sortie">Autorisation sortie</mat-checkbox></p>
+        </section>
+        
+        
+        <div [formGroup]="formFamille">
+            <h2>Famille</h2>
+            
+            <form class="formFamille">
+                <mat-form-field class="example-full-width">
+                    <mat-label>Nom de Famille</mat-label>
+                    <input #inputFamille type="text" placeholder="Pick one" matInput [formControl]="familleControl"
+                        [matAutocomplete]="familleAuto" (input)="filterFamille()" (focus)="filterFamille()">
+                    <mat-autocomplete requireSelection #familleAuto="matAutocomplete">
+                        @for (option of filteredOptionsFamille; track option) {
+                        <mat-option [value]="option">{{option}}</mat-option>
+                        }
+                    </mat-autocomplete>
+                </mat-form-field>
+                <button mat-button (click)="toggleFamilleEditMode()">
+                    <mat-icon>edit</mat-icon>
+                    <span *ngIf="!familleEditMode">Editer</span>
+                    <span *ngIf="familleEditMode">Annuler</span>
+                </button>
+                <button mat-button (click)="saveFamilleData()">
+                    <span *ngIf="familleEditMode">Sauvegarder</span>
+                </button>
+            </form>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom de famille</mat-label>
+                <input matInput formControlName="nom_famille" required>
+            </mat-form-field>
+        </div>
     </div>
     <div [formGroup]="formParentA">
 
@@ -137,16 +144,17 @@
                 <span *ngIf="parentAEditMode">Sauvegarder</span>
             </button>
         </form>
-        <mat-form-field appearance="outline">
-            <mat-label>Nom du parent A</mat-label>
-            <input matInput formControlName="nom_parentA" required>
-        </mat-form-field>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du parent A</mat-label>
+                <input matInput formControlName="nom_parentA" required>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom du parent A</mat-label>
-            <input matInput formControlName="prenom_parentA" required>
-        </mat-form-field>
-
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du parent A</mat-label>
+                <input matInput formControlName="prenom_parentA" required>
+            </mat-form-field>
+        </div>
         <mat-form-field appearance="outline">
             <mat-label>Mobile du parent A</mat-label>
             <input matInput formControlName="mobile_parentA" required>
@@ -190,16 +198,17 @@
                 <span *ngIf="parentBEditMode">Sauvegarder</span>
             </button>
         </form>
-        <mat-form-field appearance="outline">
-            <mat-label>Nom du parent B</mat-label>
-            <input matInput formControlName="nom_parentB" required>
-        </mat-form-field>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du parent B</mat-label>
+                <input matInput formControlName="nom_parentB" required>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom du parent B</mat-label>
-            <input matInput formControlName="prenom_parentB" required>
-        </mat-form-field>
-
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du parent B</mat-label>
+                <input matInput formControlName="prenom_parentB" required>
+            </mat-form-field>
+        </div>
         <mat-form-field appearance="outline">
             <mat-label>Mobile du parent B</mat-label>
             <input matInput formControlName="mobile_parentB" required>
@@ -244,17 +253,17 @@
                 <span *ngIf="profEditMode">Sauvegarder</span>
             </button>
         </form>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du professeur principale</mat-label>
+                <input matInput formControlName="nom_prof_principale" required>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Nom du professeur principale</mat-label>
-            <input matInput formControlName="nom_prof_principale" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom du professeur principale</mat-label>
-            <input matInput formControlName="prenom_prof_principale" required>
-        </mat-form-field>
-
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du professeur principale</mat-label>
+                <input matInput formControlName="prenom_prof_principale" required>
+            </mat-form-field>
+        </div>
         <mat-form-field appearance="outline">
             <mat-label>Mobile du professeur principale</mat-label>
             <input matInput formControlName="mobile_prof_principale" required>
@@ -300,17 +309,17 @@
                 <span *ngIf="accompagnateurAEditMode">Sauvegarder</span>
             </button>
         </form>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom de l'accompagnateur A</mat-label>
+                <input matInput formControlName="nom_accompagnateurA" required>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Nom de l'accompagnateur A</mat-label>
-            <input matInput formControlName="nom_accompagnateurA" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom de l'accompagnateur A</mat-label>
-            <input matInput formControlName="prenom_accompagnateurA" required>
-        </mat-form-field>
-
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom de l'accompagnateur A</mat-label>
+                <input matInput formControlName="prenom_accompagnateurA" required>
+            </mat-form-field>
+        </div>
         <mat-form-field appearance="outline">
             <mat-label>Mobile de l'accompagnateur A</mat-label>
             <input matInput formControlName="mobile_accompagnateurA" required>
@@ -346,17 +355,17 @@
                 <span *ngIf="accompagnateurBEditMode">Sauvegarder</span>
             </button>
         </form>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom de l'accompagnateur B</mat-label>
+                <input matInput formControlName="nom_accompagnateurB" required>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Nom de l'accompagnateur B</mat-label>
-            <input matInput formControlName="nom_accompagnateurB" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom de l'accompagnateur B</mat-label>
-            <input matInput formControlName="prenom_accompagnateurB" required>
-        </mat-form-field>
-
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom de l'accompagnateur B</mat-label>
+                <input matInput formControlName="prenom_accompagnateurB" required>
+            </mat-form-field>
+        </div>
         <mat-form-field appearance="outline">
             <mat-label>Mobile de l'accompagnateur B</mat-label>
             <input matInput formControlName="mobile_accompagnateurB" required>
@@ -391,17 +400,17 @@
                 <span *ngIf="urgenceAEditMode">Sauvegarder</span>
             </button>
         </form>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du contact urgence A</mat-label>
+                <input matInput formControlName="nom_urgenceA" required>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Nom du contact urgence A</mat-label>
-            <input matInput formControlName="nom_urgenceA" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom du contact urgence A</mat-label>
-            <input matInput formControlName="prenom_urgenceA" required>
-        </mat-form-field>
-
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du contact urgence A</mat-label>
+                <input matInput formControlName="prenom_urgenceA" required>
+            </mat-form-field>
+        </div>
         <mat-form-field appearance="outline">
             <mat-label>Mobile du contact urgence A</mat-label>
             <input matInput formControlName="mobile_urgenceA" required>
@@ -436,17 +445,17 @@
                 <span *ngIf="urgenceBEditMode">Sauvegarder</span>
             </button>
         </form>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Nom du contact urgence B</mat-label>
+                <input matInput formControlName="nom_urgenceB" required>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Nom du contact urgence B</mat-label>
-            <input matInput formControlName="nom_urgenceB" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Prénom du contact urgence B</mat-label>
-            <input matInput formControlName="prenom_urgenceB" required>
-        </mat-form-field>
-
+            <mat-form-field appearance="outline">
+                <mat-label>Prénom du contact urgence B</mat-label>
+                <input matInput formControlName="prenom_urgenceB" required>
+            </mat-form-field>
+        </div>
         <mat-form-field appearance="outline">
             <mat-label>Mobile du contact urgence B</mat-label>
             <input matInput formControlName="mobile_urgenceB" required>
