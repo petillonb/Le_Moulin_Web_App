@@ -56,8 +56,9 @@
       <mat-form-field>
         <mat-label>Enter a date range</mat-label>
         <mat-date-range-input [formGroup]="formSelectionDate" [rangePicker]="picker">
-          <input matStartDate formControlName="start" placeholder="Start date">
-          <input matEndDate formControlName="end" placeholder="End date">
+          <input (dateInput)="applyDateEventFilter()" matStartDate formControlName="start" placeholder="Start date" matInput>
+
+          <input (dateInput)="applyDateEventFilter()" matEndDate formControlName="end" placeholder="End date" matInput>
         </mat-date-range-input>
         <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -65,20 +66,20 @@
       </mat-form-field>
 
       <section class="checkbox-section" [formGroup]="formSelectionDate">
-        <mat-checkbox formControlName="lundi">lundi</mat-checkbox>
-        <mat-checkbox formControlName="mardi">mardi</mat-checkbox>
-        <mat-checkbox formControlName="mercredi">mercredi</mat-checkbox>
-        <mat-checkbox formControlName="jeudi">jeudi</mat-checkbox>
-        <mat-checkbox formControlName="vendredi">vendredi</mat-checkbox>
-        <mat-checkbox formControlName="samedi">samedi</mat-checkbox>
-        <mat-checkbox formControlName="dimanche">dimanche</mat-checkbox>
+        <mat-checkbox (change)="applyEventFilter()" formControlName="lundi">lundi</mat-checkbox>
+        <mat-checkbox (change)="applyEventFilter()" formControlName="mardi">mardi</mat-checkbox>
+        <mat-checkbox (change)="applyEventFilter()" formControlName="mercredi">mercredi</mat-checkbox>
+        <mat-checkbox (change)="applyEventFilter()" formControlName="jeudi">jeudi</mat-checkbox>
+        <mat-checkbox (change)="applyEventFilter()" formControlName="vendredi">vendredi</mat-checkbox>
+        <mat-checkbox (change)="applyEventFilter()" formControlName="samedi">samedi</mat-checkbox>
+        <mat-checkbox (change)="applyEventFilter()" formControlName="dimanche">dimanche</mat-checkbox>
       </section>
 
     </div>
-      <div class="button-container">
-        <button mat-raised-button (click)="ajouterEvent()" class="create-activite-btn">Ajouter Event</button>
-        <button mat-raised-button (click)="supprimerEvent()" class="delete-activite-btn">Supprimer Event</button>
-      </div>
+    <div class="button-container">
+      <button mat-raised-button (click)="ajouterEvent()" class="create-activite-btn">Ajouter Event</button>
+      <button mat-raised-button (click)="supprimerEvent()" class="delete-activite-btn">Supprimer Event</button>
+    </div>
     <mat-divider></mat-divider>
     <mat-spinner *ngIf="eventLoading"></mat-spinner>
 
@@ -87,13 +88,13 @@
       matSort (matSortChange)="sortEventTable()">
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef class="select-column">
-          <mat-checkbox (change)="$event ? toogleAllEventRows() : null"
+          <mat-checkbox (change)="$event ? toogleAllEventRows() : null; filterInscritBySelectedEvents()"
             [checked]="eventSelection.hasValue() && isAllEventSelected()"
             [indeterminate]="eventSelection.hasValue() && !isAllEventSelected()" [aria-label]="checkboxEventLabel()">
           </mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let row" class="select-column">
-          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? eventSelection.toggle(row) : null"
+          <mat-checkbox (click)="$event.stopPropagation(); filterInscritBySelectedEvents()" (change)="$event ? eventSelection.toggle(row) : null"
             [checked]="eventSelection.isSelected(row)" [aria-label]="checkboxEventLabel(row)">
           </mat-checkbox>
         </td>
@@ -107,18 +108,19 @@
       }
 
       <tr mat-header-row *matHeaderRowDef="displayedEventColumns"></tr>
-      <tr mat-row (click)="goToEventPage(row.id)" *matRowDef="let row; columns: displayedEventColumns;"></tr>
+      <tr mat-row (click)="goToEventPage(row.id_event)" *matRowDef="let row; columns: displayedEventColumns;"></tr>
 
     </table>
     <mat-paginator #paginatorEvent [pageSizeOptions]="[5, 10, 25, 100]"
       aria-label="Select page of users"></mat-paginator>
+   
     <mat-divider></mat-divider>
 
     <div class="form-nom">
 
       <mat-form-field>
         <mat-label>Inscrire Jeune</mat-label>
-        <input #nomPrenom type="text" placeholder="Pick one" matInput (keyup)="applySearchInscritFilter($event)"
+        <input #nomPrenom type="text" placeholder="Pick one" matInput (keyup)="applyInscritFilter($event)"
           [formControl]="nomPrenomControl" [matAutocomplete]="nomPrenomAuto" (input)="filterNomPrenom()"
           (focus)="filterNomPrenom()" #input>
         <mat-autocomplete requireSelection #nomPrenomAuto="matAutocomplete">
@@ -139,14 +141,14 @@
         class="mat-elevation-z8" matSort (matSortChange)="sortInscritTable()">
         <ng-container matColumnDef="select">
           <th mat-header-cell *matHeaderCellDef class="select-column">
-            <mat-checkbox (change)="$event ? toogleAllInscritRows() : null"
+            <mat-checkbox (change)="$event ? toogleAllInscritRows() : null; applyEventInscritFilter()"
               [checked]="inscritSelection.hasValue() && isAllInscritSelected()"
               [indeterminate]="inscritSelection.hasValue() && !isAllInscritSelected()"
               [aria-label]="checkboxInscritLabel()">
             </mat-checkbox>
           </th>
           <td mat-cell *matCellDef="let row" class="select-column">
-            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? inscritSelection.toggle(row) : null"
+            <mat-checkbox (click)="$event.stopPropagation(); applyEventInscritFilter() " (change)="$event ? inscritSelection.toggle(row) : null"
               [checked]="inscritSelection.isSelected(row)" [aria-label]="checkboxInscritLabel(row)">
             </mat-checkbox>
           </td>

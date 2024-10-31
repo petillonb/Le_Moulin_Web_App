@@ -5,20 +5,8 @@ https://dribbble.com/search/school
 https://material.angular.io/guide/theming#pre-built-themes
 https://material.angular.io/components/grid-list/overview
 
--create activite.
 
 -fix 2 scroll bar.
-
--filter event:
-    -date
-    -day
-    -selected inscrit
--filter inscrit:
-    -selected event
-
-
--Event Page
--Go to event Page.
 
 -Jeune activite tab
 -new jeune inscrire participant
@@ -28,6 +16,8 @@ https://material.angular.io/components/grid-list/overview
         -adulte/jeune
 -Add contact page:
 -GoToContact page From Activite page.
+-Fix IdentiteOption On Activite Page.
+-Display TrancheAge on activite page and event Page.
 
 -Add dialogues:
     -duplicate name inscrire participant
@@ -40,7 +30,6 @@ https://material.angular.io/components/grid-list/overview
 -Text Info
 -Documents
 
-
 -filter activite:
     Year:
     publique:
@@ -50,6 +39,7 @@ https://material.angular.io/components/grid-list/overview
     -activite event list
     -activite participant list
     -presence Event
+
 
 
 

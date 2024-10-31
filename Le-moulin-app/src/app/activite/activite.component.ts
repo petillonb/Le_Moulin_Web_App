@@ -120,16 +120,52 @@ export class ActiviteComponent {
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
-  supprimerActivite() {
+  async supprimerActivite() {
     this.tableLoading = true;
     console.log(this.selection.selected); // Access the array of selected rows
+
+    for(let i = 0; i<this.selection.selected.length; i++){
+      let eventList = await this.supabaseService.fetchEventDataByActiviteId(this.selection.selected[i].id)
+      for(let j = 0; j<eventList.length; j++){
+        let participantList = await this.supabaseService.fetchParticipantDataByEventId(eventList[j].id)
+        for(let k = 0; k<participantList.length; k++){
+          await this.supabaseService.supprimerParticipantData(participantList[k].id);
+        }
+        await this.supabaseService.supprimerEventData(eventList[j].id);
+      }
+      await this.supabaseService.supprimerActiviteData(this.selection.selected[i].id);
+      for(let j= 0; j<this.dataSource.data.length; j++){
+        if (this.dataSource.data[j].id == this.selection.selected[i].id) {
+          this.dataSource.data.splice(j, 1);
+          this.dataSource.filter = "";
+          console.log(this.dataSource.data);
+        }
+        
+      }
+
+    }
+
     this.tableLoading = false;
   }
-  createActivite(){
+  async createActivite(){
     console.log(this.nomActivite.value);
+    if(this.nomActivite.value){
+      let nouvelleActivite: Activite = {
+        id: null,
+        nom: this.nomActivite.value,
+        secteur: null,
+        enfant: true,
+        adulte: false,
+      }
+      nouvelleActivite = await this.supabaseService.insertActiviteData(nouvelleActivite);
+      console.log(nouvelleActivite.id);
+      this.router.navigate([`/activités/${nouvelleActivite.id}`]);
+      
+
+    }
   }
   goToActivitePage(id:number){
-    this.router.navigate([`/activités/${id}`]);;
+    this.router.navigate([`/activités/${id}`]);
   }
 
 

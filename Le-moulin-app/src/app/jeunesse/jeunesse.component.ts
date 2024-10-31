@@ -49,6 +49,7 @@ export class JeunesseComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  init = true;
   tableLoading: boolean;
 
   nomPrenom = new FormControl('');
@@ -78,8 +79,7 @@ export class JeunesseComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.tableLoading = false;
-    console.log("NgOnInit End")
-  
+    console.log("NgOnInit End", this.sort);
 
   }
 

@@ -14,7 +14,6 @@ export const routes: Routes = [
     {   
         path: 'jeunesse', children: [
             { path: 'list', component: JeunesseComponent },
-            { path: 'nouveau', component: NouveauProfileJeuneComponent },
             { path: ':id', component: ProfileJeuneComponent },
             { path: '', redirectTo: 'list', pathMatch: 'full' },
         ]
@@ -23,9 +22,15 @@ export const routes: Routes = [
         path: 'activités', children:[
             { path: 'list', component: ActiviteComponent },
             { path: ':id', component: ActivitePageComponent },
-            { path: 'event:id', component: EventComponent},
+            //{ path: 'event:id', component: EventComponent},
             { path: '', redirectTo: 'list', pathMatch: 'full' },
         ] 
+    },
+    {   
+        path: 'event', children: [
+            { path: ':id', component: EventComponent },
+            { path: '', redirectTo: '/activités', pathMatch: 'full' },
+        ]
     },
     
 ];

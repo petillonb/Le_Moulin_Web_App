@@ -1,0 +1,62 @@
+.jeunes-page {
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .top-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Reduced space between search field and table */
+  }
+  
+  .left-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-field {
+    margin-top: 20px;
+    width: 250px;
+    max-width: 100%;
+    margin: 0; /* Remove extra margin */
+  }
+  
+  .button-container {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+  }
+  
+  .create-jeune-btn {
+    min-width: 100px;
+    font-weight: 500;
+  }
+  
+  .table-container {
+    margin-top: 10px;
+    width: 100%;
+    overflow: auto;
+  }
+  
+  .select-column {
+    width: 50px;
+    text-align: center;
+  }
+  
+  .normal-column {
+    width: 20%;
+  }
+  
+  .mat-paginator {
+    margin-top: 20px;
+  }
+  
+  .mat-spinner {
+    margin: 20px auto;
+    display: block;
+  }
+  

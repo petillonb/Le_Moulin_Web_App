@@ -3,7 +3,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -36,7 +35,7 @@ export interface tableRow {
 @Component({
   selector: 'app-event',
   standalone: true,
-  imports: [CommonModule,MatIconModule, MatTabsModule, MatButtonModule, MatProgressSpinnerModule, MatTableModule, MatCheckboxModule, MatSortModule, MatPaginatorModule, FormsModule, MatSidenavModule, MatFormFieldModule, ReactiveFormsModule, MatInputModule,
+  imports: [CommonModule, MatTabsModule, MatButtonModule, MatProgressSpinnerModule, MatTableModule, MatCheckboxModule, MatSortModule, MatPaginatorModule, FormsModule, MatSidenavModule, MatFormFieldModule, ReactiveFormsModule, MatInputModule,
     MatListModule,
     MatDividerModule],
   providers: [SupabaseService],
@@ -123,22 +122,6 @@ export class EventComponent implements OnInit {
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
-
-  async setPresent(){
-    for(let i = 0; i<this.selection.selected.length; i++){
-      await this.supabaseService.setParticipantPresent(this.selection.selected[i].id);
-      this.selection.selected[i].present = true;
-      this.dataSource.filter = "";
-    }
-  }
-  async setAbsent(){
-    for(let i = 0; i<this.selection.selected.length; i++){
-      await this.supabaseService.setParticipantAbsent(this.selection.selected[i].id);
-      this.selection.selected[i].present = false;
-      this.dataSource.filter = "";
-    }
-  }
-
   goToInscritPage(id: string) {
     console.log(id);
     for (let i = 0; i < this.listOfJeunes.length; i++) {

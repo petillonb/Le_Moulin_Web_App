@@ -12,7 +12,7 @@ import { ReactiveFormsModule, FormGroup, FormControl, FormsModule, FormBuilder }
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Identite } from '../entities/identite.entite';
 import { Famille } from '../entities/famille.entite';
-import { activiteEvent } from '../entities/event.entite';
+import { EventActivite } from '../entities/event.entite';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
@@ -30,8 +30,8 @@ import { TestBed } from '@angular/core/testing';
 import { Participant } from '../entities/participant.entite';
 import { find } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatListModule} from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 
 
 
@@ -75,7 +75,7 @@ export interface inscritTableRow {
     MatDatepickerModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    MatListModule, 
+    MatListModule,
     MatDividerModule
   ],
   providers: [SupabaseService, provideNativeDateAdapter()],
@@ -90,16 +90,18 @@ export class ActivitePageComponent implements OnInit {
   inscritDataSource: MatTableDataSource<inscritTableRow>;
   inscritSelection: SelectionModel<inscritTableRow>;
 
+  init = true;
   eventLoading: boolean;
 
 
-  @ViewChild(MatPaginator ) paginatorEvent: MatPaginator;
+  @ViewChild(MatPaginator) paginatorEvent: MatPaginator;
   @ViewChild(MatSort) sortEvent: MatSort;
 
   @ViewChild(MatPaginator) paginatorInscrit: MatPaginator;
   @ViewChild(MatSort) sortInscrit: MatSort;
 
   @ViewChild('nomPrenom') nomPrenom: ElementRef<HTMLInputElement>;
+
   optionsIdentite: string[] = [''];
   filteredOptionsIdentite: string[];
 
@@ -122,7 +124,7 @@ export class ActivitePageComponent implements OnInit {
 
   inscritList: Participant[] = [];
   inscritListOfRows: inscritTableRow[] = [];
-  eventList: activiteEvent[] = [];
+  eventList: EventActivite[] = [];
   eventListOfRows: eventTableRow[] = [];
 
 
@@ -144,9 +146,11 @@ export class ActivitePageComponent implements OnInit {
 
 
     this.eventLoading = true;
-  
+
     this.startDateYear = new Date(new Date().getFullYear(), 0, 1)
     this.endDateYear = new Date(new Date().getFullYear(), 11, 31)
+
+
 
 
 
@@ -186,7 +190,7 @@ export class ActivitePageComponent implements OnInit {
 
   }
   displayedEventColumns: string[] = ['jour', 'date', 'inscrit_event', 'participation_event', 'select'];
-  displayedInscritColumns: string[] = ['nom', 'prenom', 'inscrit_inscrit', 'participation_inscrit','select'];
+  displayedInscritColumns: string[] = ['nom', 'prenom', 'inscrit_inscrit', 'participation_inscrit', 'select'];
 
   async updateDataSources() {
     console.log("updating Data sources");
@@ -236,7 +240,7 @@ export class ActivitePageComponent implements OnInit {
       console.log("pushing events");
       this.eventListOfRows.push({ id_event, date, jour, inscrit_event, participation_event });
     }
-    console.log("inscritListOfRows",this.inscritListOfRows);
+    console.log("inscritListOfRows", this.inscritListOfRows);
     console.log("eventListOfRows", this.eventListOfRows);
     this.eventDataSource = new MatTableDataSource(this.eventListOfRows);
     console.log("eventDataSource", this.eventDataSource.data);
@@ -247,10 +251,10 @@ export class ActivitePageComponent implements OnInit {
     this.eventDataSource.paginator = this.paginatorEvent;
     this.inscritDataSource.paginator = this.paginatorInscrit;
     this.eventDataSource.sort = this.sortEvent;
-    this.inscritDataSource.sort = this.sortInscrit; 
-    
-    
-    
+    this.inscritDataSource.sort = this.sortInscrit;
+
+
+
     this.inscritDataSource.filter = "";
     this.eventDataSource.filter = "";
     this.eventLoading = false;
@@ -263,19 +267,21 @@ export class ActivitePageComponent implements OnInit {
       'inscrit_inscrit': 'Inscrit',
       'participation_inscrit': 'Participation'
     };
-  
+
     return columnMappings[columnName] || columnName;
   }
-  sortEventTable(){
+
+
+  sortEventTable() {
     console.log(this.sortEvent.active);
     this.eventDataSource.sort = this.sortEvent;
   }
-  sortInscritTable(){
+  sortInscritTable() {
     this.inscritDataSource.sort = this.sortInscrit;
   }
 
   //todo
-  applySearchInscritFilter(event: Event) {
+  applyInscritFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.inscritDataSource.filter = filterValue.trim().toLowerCase();
 
@@ -284,11 +290,129 @@ export class ActivitePageComponent implements OnInit {
     }
 
   }
-  applyDateEventFilter(){
-    
+
+  filterInscritBySelectedEvents() {
+    // Get selected event IDs from the event selection model
+    const selectedEventIds = this.eventSelection.selected.map(event => event.id_event);
+    console.log("Selected Event IDs:", selectedEventIds);
+
+    if (selectedEventIds.length > 0) {
+        console.log("Filtering Inscrits...");
+
+        // Filter inscrits to only include those linked to selected events
+        const filteredInscrits = this.inscritListOfRows.filter(inscrit => {
+            // Check if the inscrit is linked to any selected event via the participant list
+            return this.inscritList.some(participant =>
+                participant.identite_id.id === inscrit.id_inscrit && // Match participant ID
+                selectedEventIds.includes(participant.event_id.id)    // Match event ID
+            );
+        });
+
+        console.log("Filtered Inscrits:", filteredInscrits); // Debugging
+        this.inscritDataSource.data = filteredInscrits;
+    } else {
+        console.log("No events selected. Resetting to show all inscrits.");
+        // If no event is selected, reset to show all inscrits
+        this.inscritDataSource.data = this.inscritListOfRows;
+    }
+
+    // Ensure paginator resets to the first page
+    if (this.inscritDataSource.paginator) {
+        this.inscritDataSource.paginator.firstPage();
+    }
+}
+
+
+
+  applyEventInscritFilter() {
+    this.formSelectionDate.patchValue({
+      start: this.startDateYear,
+      end: this.endDateYear,
+      lundi: true,
+      mardi: true,
+      mercredi: true,
+      jeudi: true,
+      vendredi: true,
+      samedi: true,
+      dimanche: true,
+    })
+    this.applyEventFilter();
+
+  }
+  applyDateEventFilter() {
+    this.formSelectionDate.patchValue({
+      lundi: true,
+      mardi: true,
+      mercredi: true,
+      jeudi: true,
+      vendredi: true,
+      samedi: true,
+      dimanche: true,
+    })
+    this.applyEventFilter();
   }
 
   applyEventFilter() {
+    console.log("eventfiltering");
+    const startDateInput = this.formSelectionDate.controls['start'].value;
+    const endDateInput = this.formSelectionDate.controls['end'].value;
+    const startDate = new Date(startDateInput);
+
+    let endDate = new Date(endDateInput);
+    if (!endDateInput || startDateInput === endDateInput) {
+      endDate = new Date(startDateInput);
+      endDate.setHours(23, 59, 59, 999); // End of the day
+
+    } else {
+      // If the end date is provided, set the end time to the end of the day
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    startDate.setHours(0, 0, 0, 0);
+
+
+    const jours = {
+      lundi: this.formSelectionDate.controls['lundi'].value,
+      mardi: this.formSelectionDate.controls['mardi'].value,
+      mercredi: this.formSelectionDate.controls['mercredi'].value,
+      jeudi: this.formSelectionDate.controls['jeudi'].value,
+      vendredi: this.formSelectionDate.controls['vendredi'].value,
+      samedi: this.formSelectionDate.controls['samedi'].value,
+      dimanche: this.formSelectionDate.controls['dimanche'].value
+    };
+    const selectedInscritIds = this.inscritSelection.selected.map(inscrit => inscrit.id_inscrit);
+
+    const filteredEvents = this.eventListOfRows.filter(event => {
+      const eventDate = new Date(event.date);
+      const weekday = eventDate.getDay(); // 0 (Sun) - 6 (Sat)
+
+      // Check if event is within the date range and if the corresponding day is selected
+      const isInDateRange = (eventDate >= startDate && eventDate <= endDate);
+      const isDayIncluded = (
+        (weekday === 1 && jours.lundi) ||
+        (weekday === 2 && jours.mardi) ||
+        (weekday === 3 && jours.mercredi) ||
+        (weekday === 4 && jours.jeudi) ||
+        (weekday === 5 && jours.vendredi) ||
+        (weekday === 6 && jours.samedi) ||
+        (weekday === 0 && jours.dimanche)
+      );
+      const hasSelectedParticipant = selectedInscritIds.length === 0 ||
+        this.inscritList
+          .filter(participant => participant.event_id.id === event.id_event) // Get participants for the current event
+          .some(participant => selectedInscritIds.includes(participant.identite_id.id)); // Check if they are selected
+
+      return isInDateRange && isDayIncluded && hasSelectedParticipant; // Only include events that meet both criteria
+    });
+
+    // Update the data source with the filtered data
+    this.eventDataSource.data = filteredEvents;
+
+    // Optionally, you can trigger change detection if necessary
+    this.eventDataSource._updateChangeSubscription();
+
+
+
 
   }
   isAllInscritSelected() {
@@ -481,7 +605,7 @@ export class ActivitePageComponent implements OnInit {
 
       // Insert event if conditions are met and event not found
       if (shouldInsert && !found) {
-        const event: activiteEvent = {
+        const event: EventActivite = {
           id: null,
           activite_id: this.activiteData.id,
           date: new Date(date) // Clone the date for the new event
@@ -506,9 +630,9 @@ export class ActivitePageComponent implements OnInit {
     this.eventLoading = true;
     for (let i = 0; i < this.eventSelection.selected.length; i++) {
       for (let j = 0; j < this.inscritList.length; j++) {
-        console.log("j",j)
+        console.log("j", j)
         if (this.eventSelection.selected[i].id_event == this.inscritList[j].event_id.id) {
-          console.log("selected",this.eventSelection.selected[i].id_event,"inscrit",this.inscritList[j].event_id.id)
+          console.log("selected", this.eventSelection.selected[i].id_event, "inscrit", this.inscritList[j].event_id.id)
           await this.supabaseService.supprimerParticipantData(this.inscritList[j].id);
         }
       }
@@ -517,7 +641,7 @@ export class ActivitePageComponent implements OnInit {
     this.updateDataSources();
   }
 
- 
+
 
   async inscrireJeune() {
 
@@ -532,15 +656,15 @@ export class ActivitePageComponent implements OnInit {
           for (let j = 0; j < this.eventSelection.selected.length; j++) {
             //let currentDate = new Date();
             let found = false;
-            for(let k = 0; k<this.inscritList.length;k++){
-              if(this.inscritList[k].identite_id.id == this.identiteList[i].id && this.inscritList[k].event_id.id == this.eventSelection.selected[j].id_event){
+            for (let k = 0; k < this.inscritList.length; k++) {
+              if (this.inscritList[k].identite_id.id == this.identiteList[i].id && this.inscritList[k].event_id.id == this.eventSelection.selected[j].id_event) {
                 found = true;
               }
             }
             //new Date(this.eventSelection.selected[j].date) > currentDate &&
-            if ( found == false) {
+            if (found == false) {
 
-              let event: activiteEvent = {
+              let event: EventActivite = {
                 id: this.eventSelection.selected[j].id_event,
                 activite_id: this.activiteData.id,
                 date: this.eventSelection.selected[j].date
@@ -549,7 +673,7 @@ export class ActivitePageComponent implements OnInit {
                 id: null,
                 identite_id: this.identiteList[i],
                 event_id: event,
-                present: null
+                present: false
               }
               this.supabaseService.insertParticipantData(participant);
             }
@@ -563,9 +687,9 @@ export class ActivitePageComponent implements OnInit {
   async desincrireJeune() {
     this.eventLoading = true;
     for (let i = 0; i < this.inscritSelection.selected.length; i++) {
-      console.log("inscrit",this.inscritSelection.selected[i].nom)
+      console.log("inscrit", this.inscritSelection.selected[i].nom)
       for (let j = 0; j < this.eventSelection.selected.length; j++) {
-        console.log("event",this.eventSelection.selected[i].date)
+        console.log("event", this.eventSelection.selected[i].date)
         for (let k = 0; k < this.inscritList.length; k++) {
           //console.log("i:",i,"inscrit_id", this.inscritSelection.selected[i].id_inscrit,"j:",j,"event_id",this.)
           if (this.inscritList[k].identite_id.id == this.inscritSelection.selected[i].id_inscrit && this.inscritList[k].event_id.id == this.eventSelection.selected[j].id_event) {
@@ -586,9 +710,9 @@ export class ActivitePageComponent implements OnInit {
       }
     }
   }
-  goToEventPage(idEvent: string) {
-    console.log("goToJeunePage", idEvent)
-    this.router.navigate([`/activités/event/${idEvent}`]);
+  goToEventPage(id: string) {
+    console.log("goToEventPage", id)
+    this.router.navigate([`/event/${id}`]);
   }
 
   goBack() {

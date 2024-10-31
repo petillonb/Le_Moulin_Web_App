@@ -16,7 +16,7 @@ import { Identite } from '../../entities/identite.entite'
 import { Contact } from '../../entities/contact.entite'
 import { Famille } from '../../entities/famille.entite'
 import { Participant } from '../../entities/participant.entite'
-import { activiteEvent } from '../../entities/event.entite'
+import { EventActivite } from '../../entities/event.entite'
 
 export interface Profile {
   id: string
@@ -108,7 +108,7 @@ export class SupabaseService {
 
   }
 
-  async fetchEventDataByActiviteId(activiteId: number): Promise<activiteEvent[]>{
+  async fetchEventDataByActiviteId(activiteId: number): Promise<EventActivite[]>{
     console.log("fetching event", activiteId);
     const eventQuery = await this.supabase
       .from('event')
@@ -120,7 +120,7 @@ export class SupabaseService {
     if (error) throw error
     const event: EventData = data as EventData
     console.log(event);
-    return (event  as activiteEvent[]);
+    return (event  as EventActivite[]);
   }
 
   async fetchParticipantDataByEventId(eventId: number): Promise<Participant[]>{
@@ -204,6 +204,20 @@ export class SupabaseService {
       })
       .eq('id',activiteData.id);
       console.log("updated table");
+  }
+
+  async fetchEventDataById(id: number): Promise<EventActivite> {
+    const eventQuery = await this.supabase
+    .from('event')
+    .select()
+    .eq('id',id)
+  type EventData = QueryData<typeof eventQuery>
+
+  const { data, error } = await eventQuery
+  if (error) throw error
+  const eventData: EventData = data as EventData
+
+  return (eventData[0]  as EventActivite);
   }
 
 
@@ -292,7 +306,27 @@ export class SupabaseService {
 
   }
 
-  async insertEventData(eventData: activiteEvent){
+  async insertActiviteData(activiteData: Activite){
+    console.log("inserting activite:", activiteData);
+    const activiteDataQuery= await this.supabase
+      .from('activite')
+      .insert({ 
+        nom: activiteData.nom,
+        secteur: activiteData.secteur,
+        enfant: activiteData.enfant,
+        adulte: activiteData.adulte
+      })
+      .select()
+    type activiteData= QueryData<typeof activiteDataQuery>
+    console.log("test")
+    const { data, error } = await activiteDataQuery
+    if (error) throw error
+    const activite: activiteData = data as activiteData
+    console.log("test")
+    return (activite[0]  as Activite);
+  }
+
+  async insertEventData(eventData: EventActivite){
     console.log("inserting event:", eventData);
     console.log(typeof eventData.date);
     const { } = await this.supabase
@@ -388,6 +422,14 @@ export class SupabaseService {
 
   }
 
+  async supprimerActiviteData(id: number){
+    const response = await this.supabase
+    .from('activite')
+    .delete()
+    .eq('id', id);
+    
+  }
+
 
 
   async insertFamilleData(familleData: Famille):Promise<Famille> {
@@ -406,6 +448,29 @@ export class SupabaseService {
       const famille: familleData = data as familleData
   
       return (famille[0]  as Famille);
+
+  }
+
+  async setParticipantPresent(identiteId: number){
+    console.log("Setting Present", identiteId);
+    const { } = await this.supabase
+      .from('participant')
+      .update({
+        present: true,
+      })
+      .eq('identite_id',identiteId);
+      console.log("updated table");
+
+  }
+  async setParticipantAbsent(identiteId: number){
+    console.log("Setting Present", identiteId);
+    const { } = await this.supabase
+      .from('participant')
+      .update({
+        present: false,
+      })
+      .eq('identite_id',identiteId);
+      console.log("updated table");
 
   }
 
