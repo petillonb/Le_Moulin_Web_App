@@ -2,8 +2,16 @@
     flex: 1 1 auto;
   }
 
-  .menu-container {
-    width: auto;
-    height: 100%;
-  }
+
   
+  .menu-container {
+    
+    width: auto;
+    height: 100vh; /* Ensures the drawer container fits the viewport */
+    overflow: hidden; /* Prevents extra scrolling on the main container */
+}
+
+.example-sidenav-content {
+    height: 100%; /* Uses the full height of the drawer container */
+    overflow-y: auto; /* Enables vertical scrolling only */
+}

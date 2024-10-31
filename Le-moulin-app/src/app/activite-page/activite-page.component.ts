@@ -12,7 +12,7 @@ import { ReactiveFormsModule, FormGroup, FormControl, FormsModule, FormBuilder }
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Identite } from '../entities/identite.entite';
 import { Famille } from '../entities/famille.entite';
-import { Event } from '../entities/event.entite';
+import { activiteEvent } from '../entities/event.entite';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
@@ -29,12 +29,15 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { TestBed } from '@angular/core/testing';
 import { Participant } from '../entities/participant.entite';
 import { find } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
 
 
 
 export interface eventTableRow {
   id_event: number;
-  date: Date;
+  date: string;
   jour: string;
   inscrit_event: number;
   participation_event: number;
@@ -70,7 +73,10 @@ export interface inscritTableRow {
     MatCardModule,
     JsonPipe,
     MatDatepickerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatProgressSpinnerModule,
+    MatListModule, 
+    MatDividerModule
   ],
   providers: [SupabaseService, provideNativeDateAdapter()],
   templateUrl: './activite-page.component.html',
@@ -84,7 +90,10 @@ export class ActivitePageComponent implements OnInit {
   inscritDataSource: MatTableDataSource<inscritTableRow>;
   inscritSelection: SelectionModel<inscritTableRow>;
 
-  @ViewChild(MatPaginator) paginatorEvent: MatPaginator;
+  eventLoading: boolean;
+
+
+  @ViewChild(MatPaginator ) paginatorEvent: MatPaginator;
   @ViewChild(MatSort) sortEvent: MatSort;
 
   @ViewChild(MatPaginator) paginatorInscrit: MatPaginator;
@@ -94,7 +103,7 @@ export class ActivitePageComponent implements OnInit {
   optionsIdentite: string[] = [''];
   filteredOptionsIdentite: string[];
 
-  jourSemaine = ['lundi', 'mardi', 'mecredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+  jourSemaine = ['dimanche', 'lundi', 'mardi', 'mecredi', 'jeudi', 'vendredi', 'samedi']
 
   constructor(
     private readonly router: Router,
@@ -111,9 +120,9 @@ export class ActivitePageComponent implements OnInit {
   identiteList: Identite[];
   jeuneList: Jeune[];
 
-  inscritList: Participant[];
+  inscritList: Participant[] = [];
   inscritListOfRows: inscritTableRow[] = [];
-  eventList: Event[];
+  eventList: activiteEvent[] = [];
   eventListOfRows: eventTableRow[] = [];
 
 
@@ -131,17 +140,21 @@ export class ActivitePageComponent implements OnInit {
 
   id: number;
 
-  ngOnInit(): void {
+  async ngOnInit() {
 
+
+    this.eventLoading = true;
+  
     this.startDateYear = new Date(new Date().getFullYear(), 0, 1)
     this.endDateYear = new Date(new Date().getFullYear(), 11, 31)
+
 
 
     this.formActivite = new FormGroup({
       nom: new FormControl(''),
       secteur: new FormControl(''),
-      enfant: new FormControl(true),
-      adulte: new FormControl(true),
+      enfant: new FormControl(false),
+      adulte: new FormControl(false),
     });
 
     this.formActivite.disable();
@@ -164,69 +177,117 @@ export class ActivitePageComponent implements OnInit {
       this.jeuneList = await this.supabaseService.fetchJeunesseData();
       this.activiteOriginalData = await this.supabaseService.fetchActiviteDataById(params['id']);
       this.activiteData = structuredClone(this.activiteOriginalData);
-      this.updateDataSources();
+      await this.updateDataSources();
+      console.log("eventDataSource", this.eventDataSource);
       this.patchValue();
       this.fillIdentiteOptionList();
     })
-    
-    
+
+
   }
-  displayedEventColumns: string[] = ['date', 'jour', 'inscrit_event', 'participation_event', 'select'];
-  displayedInscritColumns: string[] = ['nom', 'prenom', 'inscrit_inscrit', 'participation_inscrit', 'select'];
-  
-  async updateDataSources(){
+  displayedEventColumns: string[] = ['jour', 'date', 'inscrit_event', 'participation_event', 'select'];
+  displayedInscritColumns: string[] = ['nom', 'prenom', 'inscrit_inscrit', 'participation_inscrit','select'];
+
+  async updateDataSources() {
+    console.log("updating Data sources");
+    this.inscritListOfRows = [];
+    this.eventListOfRows = [];
     this.eventList = await this.supabaseService.fetchEventDataByActiviteId(this.activiteData.id);
+    this.eventList = [...this.eventList];
+    console.log(this.eventList.length);
     for (let i = 0; i < this.eventList.length; i++) {
-      let participantList: Participant[] = await this.supabaseService.fetchParticipantDataByEventId(this.eventList[i].id)
-  
+      let participantList = await this.supabaseService.fetchParticipantDataByEventId(this.eventList[i].id);
+      this.inscritList = this.inscritList.concat(participantList);
+      console.log("inscritList", this.inscritList);
       let id_event = this.eventList[i].id;
       let date = this.eventList[i].date;
-      let jour = this.jourSemaine[date.getDay()];
+      let jour = this.jourSemaine[new Date(date).getDay()];
       let inscrit_event = participantList.length;
       let participation_event = 0;
-  
+
       let found = false;
       for (let j = 0; j < inscrit_event; j++) {
         for (let k = 0; k < this.inscritListOfRows.length; k++) {
-          if (this.inscritListOfRows[k].id_inscrit = participantList[j].id) {
+          if (this.inscritListOfRows[k].id_inscrit == participantList[j].identite_id.id) {
+            console.log("found inscrit")
             found = true;
-            
             this.inscritListOfRows[k].inscrit_inscrit = this.inscritListOfRows[k].inscrit_inscrit + 1;
-            if (participantList[j].presence == true) {
+            if (participantList[j].present == true) {
+
               participation_event = participation_event + 1;
               this.inscritListOfRows[k].participation_inscrit = this.inscritListOfRows[k].participation_inscrit + 1;
             }
           }
         }
         if (found == false) {
-          let id_inscrit = participantList[j].id;
-          let nom = participantList[j].idendite_id.nom;
-          let prenom = participantList[j].idendite_id.prenom;
+          let id_inscrit = participantList[j].identite_id.id;
+          let nom = participantList[j].identite_id.nom;
+          let prenom = participantList[j].identite_id.prenom;
           let inscrit_inscrit = 1;
           let participation_inscrit = 0;
-          if (participantList[j].presence == true) {
+          if (participantList[j].present == true) {
             participation_event = participation_event + 1;
             participation_inscrit = 1;
           }
+          console.log("pushing inscrit");
           this.inscritListOfRows.push({ id_inscrit, nom, prenom, inscrit_inscrit, participation_inscrit });
         }
       }
+      console.log("pushing events");
       this.eventListOfRows.push({ id_event, date, jour, inscrit_event, participation_event });
     }
+    console.log("inscritListOfRows",this.inscritListOfRows);
+    console.log("eventListOfRows", this.eventListOfRows);
     this.eventDataSource = new MatTableDataSource(this.eventListOfRows);
-    this.eventDataSource.filter = "";
+    console.log("eventDataSource", this.eventDataSource.data);
+    this.eventSelection = new SelectionModel<eventTableRow>(true);
     this.inscritDataSource = new MatTableDataSource(this.inscritListOfRows);
-    this.inscritDataSource.filter = "";
+    console.log("inscritDataSource", this.inscritDataSource.data);
+    this.inscritSelection = new SelectionModel<inscritTableRow>(true);
     this.eventDataSource.paginator = this.paginatorEvent;
     this.inscritDataSource.paginator = this.paginatorInscrit;
     this.eventDataSource.sort = this.sortEvent;
+    this.inscritDataSource.sort = this.sortInscrit; 
+    
+    
+    
+    this.inscritDataSource.filter = "";
+    this.eventDataSource.filter = "";
+    this.eventLoading = false;
+  }
+
+  getDisplayColumnName(columnName: string): string {
+    const columnMappings: Record<string, string> = {
+      'inscrit_event': 'Inscrit',
+      'participation_event': 'Participation',
+      'inscrit_inscrit': 'Inscrit',
+      'participation_inscrit': 'Participation'
+    };
+  
+    return columnMappings[columnName] || columnName;
+  }
+  sortEventTable(){
+    console.log(this.sortEvent.active);
+    this.eventDataSource.sort = this.sortEvent;
+  }
+  sortInscritTable(){
     this.inscritDataSource.sort = this.sortInscrit;
   }
 
+  //todo
+  applySearchInscritFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.inscritDataSource.filter = filterValue.trim().toLowerCase();
 
-  applyInscritFilter() {
+    if (this.inscritDataSource.paginator) {
+      this.inscritDataSource.paginator.firstPage();
+    }
 
   }
+  applyDateEventFilter(){
+    
+  }
+
   applyEventFilter() {
 
   }
@@ -301,11 +362,12 @@ export class ActivitePageComponent implements OnInit {
   }
 
   patchValue() {
+    console.log(this.activiteData);
     this.formActivite.patchValue({
       nom: this.activiteData.nom,
       secteur: this.activiteData.secteur,
       enfant: this.activiteData.enfant,
-      adult: this.activiteData.adulte
+      adulte: this.activiteData.adulte
     })
   }
 
@@ -323,10 +385,12 @@ export class ActivitePageComponent implements OnInit {
     this.patchValue();
   }
   updateActiviteData() {
+    console.log("updating");
     this.activiteData.nom = this.formActivite.controls["nom"].value;
     this.activiteData.secteur = this.formActivite.controls["secteur"].value;
     this.activiteData.adulte = this.formActivite.controls["adulte"].value;
     this.activiteData.enfant = this.formActivite.controls["enfant"].value;
+    console.log("updated", this.activiteData);
   }
 
 
@@ -341,79 +405,186 @@ export class ActivitePageComponent implements OnInit {
     this.activiteOriginalData = structuredClone(this.activiteData);
   }
 
-  ajouterEvent() {
-    let startDate = this.formSelectionDate.controls['start'].value;
-    let endDate = this.formSelectionDate.controls['start'].value;
-    let lundi = this.formSelectionDate.controls['lundi'].value;
-    let mardi = this.formSelectionDate.controls['mardi'].value;
-    let mercredi = this.formSelectionDate.controls['mercredi'].value;
-    let jeudi = this.formSelectionDate.controls['jeudi'].value;
-    let vendredi = this.formSelectionDate.controls['vendredi'].value;
-    let samedi = this.formSelectionDate.controls['samedi'].value;
-    let dimanche = this.formSelectionDate.controls['dimanche'].value;
+  //to do: prevent duplicates
+  //to do: multiple events.
+  async ajouterEvent() {
+    console.log("adding event");
+    this.eventLoading = true;
 
-    if (startDate != '') {
-      let date = startDate;
-      let event: Event = {
-        id: null,
-        activite_id: this.activiteData.id,
-        date: date
+    // Get the date values from the form
+    const startDateInput = this.formSelectionDate.controls['start'].value;
+    const endDateInput = this.formSelectionDate.controls['end'].value;
+
+    const startDate = new Date(startDateInput);
+    let endDate = new Date(endDateInput);
+    if (endDateInput == null) {
+      endDate = new Date(startDateInput);
+    }
+
+    // Parse dates and ensure they are valid
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      console.error("Invalid start or end date");
+      return; // Exit if the dates are invalid
+    }
+
+
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
+
+    // Get the weekday selections from the form
+    const jours = {
+      lundi: this.formSelectionDate.controls['lundi'].value,
+      mardi: this.formSelectionDate.controls['mardi'].value,
+      mercredi: this.formSelectionDate.controls['mercredi'].value,
+      jeudi: this.formSelectionDate.controls['jeudi'].value,
+      vendredi: this.formSelectionDate.controls['vendredi'].value,
+      samedi: this.formSelectionDate.controls['samedi'].value,
+      dimanche: this.formSelectionDate.controls['dimanche'].value
+    };
+
+    // Normalize the dates to midnight
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+
+    // Calculate total days between the two dates
+    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+
+    // Loop through each day from startDate to endDate
+    let date = new Date(startDate);
+    for (let i = 0; i <= totalDays; i++) {
+      console.log(`day i ${i} date ${date}`);
+
+      let found = false;
+
+      // Check if the event for this date already exists
+      for (let j = 0; j < this.eventList.length; j++) {
+        const eventDate = new Date(this.eventList[j].date);
+        eventDate.setHours(0, 0, 0, 0); // Normalize for comparison
+
+        if (date.getTime() === eventDate.getTime()) {
+          found = true;
+          console.log(`Event already exists for ${date}`);
+          break; // Stop checking if a match is found
+        }
       }
-      //this.supabaseService.insertEventData(event);
-      if (endDate != '') {
-        let timeDifference = endDate.getTime() - startDate.getTime();
-        let dayDifference = timeDifference / (1000 * 3600 * 24);
-        if (dayDifference > 0) {
-          for (let i = 1; i < dayDifference; i++) {
-            date.setDate(date.getDate()+1)
-            event.date = date;
-            if(lundi == true && date.getDay() == 1){
-             // this.supabaseService.insertEventData(event);
-            }
-            if(mardi == true && date.getDay() == 2){
-              //this.supabaseService.insertEventData(event);
-              
-            }
-            if(mercredi == true && date.getDay() == 3){
-              //this.supabaseService.insertEventData(event);
 
+      // Check if the current date is a day we want to insert and not found already
+      const weekday = date.getDay();
+      const shouldInsert = (jours.lundi && weekday === 1) ||
+        (jours.mardi && weekday === 2) ||
+        (jours.mercredi && weekday === 3) ||
+        (jours.jeudi && weekday === 4) ||
+        (jours.vendredi && weekday === 5) ||
+        (jours.samedi && weekday === 6) ||
+        (jours.dimanche && weekday === 0);
+
+      // Insert event if conditions are met and event not found
+      if (shouldInsert && !found) {
+        const event: activiteEvent = {
+          id: null,
+          activite_id: this.activiteData.id,
+          date: new Date(date) // Clone the date for the new event
+        };
+        event.date.setDate(date.getDate() + 1);
+        console.log(`inserting event: ${JSON.stringify(event)}`);
+        await this.supabaseService.insertEventData(event);
+      } else if (found) {
+        console.log(`skipped ${date}`);
+      }
+
+      // Increment the date by one day
+      date.setDate(date.getDate() + 1);
+    }
+
+    this.updateDataSources();
+  }
+
+
+
+  async supprimerEvent() {
+    this.eventLoading = true;
+    for (let i = 0; i < this.eventSelection.selected.length; i++) {
+      for (let j = 0; j < this.inscritList.length; j++) {
+        console.log("j",j)
+        if (this.eventSelection.selected[i].id_event == this.inscritList[j].event_id.id) {
+          console.log("selected",this.eventSelection.selected[i].id_event,"inscrit",this.inscritList[j].event_id.id)
+          await this.supabaseService.supprimerParticipantData(this.inscritList[j].id);
+        }
+      }
+      await this.supabaseService.supprimerEventData(this.eventSelection.selected[i].id_event);
+    }
+    this.updateDataSources();
+  }
+
+ 
+
+  async inscrireJeune() {
+
+    console.log("nomPrenomForm", this.nomPrenomControl.value);
+    this.eventLoading = true;
+    if (this.nomPrenomControl.value != "" && this.nomPrenomControl.value != null) {
+      let nomPrenomArray = this.nomPrenomControl.value.split(" ")
+      console.log("nomPrenomArray", nomPrenomArray);
+      for (let i = 0; i < this.identiteList.length; i++) {
+
+        if (nomPrenomArray[0] == this.identiteList[i].nom && nomPrenomArray[1] == this.identiteList[i].prenom) {
+          for (let j = 0; j < this.eventSelection.selected.length; j++) {
+            //let currentDate = new Date();
+            let found = false;
+            for(let k = 0; k<this.inscritList.length;k++){
+              if(this.inscritList[k].identite_id.id == this.identiteList[i].id && this.inscritList[k].event_id.id == this.eventSelection.selected[j].id_event){
+                found = true;
+              }
             }
-            if(jeudi == true && date.getDay() == 4){
-              //this.supabaseService.insertEventData(event);
-              
-            }
-            if(vendredi == true && date.getDay() == 5){
-              //this.supabaseService.insertEventData(event);
-              
-            }
-            if(samedi == true && date.getDay() == 6){
-              //this.supabaseService.insertEventData(event);
-              
-            }
-            if(dimanche == true && date.getDay() == 0){
-              //this.supabaseService.insertEventData(event);
-              
+            //new Date(this.eventSelection.selected[j].date) > currentDate &&
+            if ( found == false) {
+
+              let event: activiteEvent = {
+                id: this.eventSelection.selected[j].id_event,
+                activite_id: this.activiteData.id,
+                date: this.eventSelection.selected[j].date
+              };
+              let participant: Participant = {
+                id: null,
+                identite_id: this.identiteList[i],
+                event_id: event,
+                present: null
+              }
+              this.supabaseService.insertParticipantData(participant);
             }
           }
-
         }
       }
     }
     this.updateDataSources();
   }
-  supprimerEvent() {
 
+  async desincrireJeune() {
+    this.eventLoading = true;
+    for (let i = 0; i < this.inscritSelection.selected.length; i++) {
+      console.log("inscrit",this.inscritSelection.selected[i].nom)
+      for (let j = 0; j < this.eventSelection.selected.length; j++) {
+        console.log("event",this.eventSelection.selected[i].date)
+        for (let k = 0; k < this.inscritList.length; k++) {
+          //console.log("i:",i,"inscrit_id", this.inscritSelection.selected[i].id_inscrit,"j:",j,"event_id",this.)
+          if (this.inscritList[k].identite_id.id == this.inscritSelection.selected[i].id_inscrit && this.inscritList[k].event_id.id == this.eventSelection.selected[j].id_event) {
+            await this.supabaseService.supprimerParticipantData(this.inscritList[k].id);
+          }
+        }
+      }
+    }
+    this.updateDataSources();
   }
 
-  inscrireJeune() {
-    console.log("inscrire jeune");
-  }
-  desincrireJeune() {
 
-  }
-  goToJeunePage(idJeune: string) {
-    console.log("goToJeunePage", idJeune)
-    this.router.navigate([`/jeunesse/${idJeune}`]);
+  goToInscritPage(id: string) {
+    console.log(id);
+    for (let i = 0; i < this.jeuneList.length; i++) {
+      if (id == this.jeuneList[i].identite_id.id) {
+        this.router.navigate([`/jeunesse/${this.jeuneList[i].id}`]);
+      }
+    }
   }
   goToEventPage(idEvent: string) {
     console.log("goToJeunePage", idEvent)

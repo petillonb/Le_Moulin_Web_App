@@ -1,3 +1,5 @@
+
+
 :host {
     .profile-header {
         display: flex;
@@ -12,6 +14,56 @@
         flex: 1;
     }
 }
+
 .date-picker-field {
-    margin-top: 10px; /* Or any value that fits your needs */
-  }
+    margin-top: 10px;
+    /* Or any value that fits your needs */
+}
+
+.form-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+.button-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.checkbox-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.full-width {
+    width: 100%;
+}
+
+
+h2 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #555;
+}
+mat-divider {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}

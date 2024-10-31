@@ -1,21 +1,24 @@
-import { ChangeDetectionStrategy, Component, computed, OnInit, signal,AfterViewInit,ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component,ChangeDetectorRef, computed, OnInit, signal, AfterViewInit, ViewChild } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {SelectionModel} from '@angular/cdk/collections';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { createClient } from '@supabase/supabase-js';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../common/supabase/supabase.service';
 import { Jeune } from '../entities/jeune.entite';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule,Sort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 
 
 
@@ -27,22 +30,27 @@ export interface tableRow {
 
 
 
+
 @Component({
   selector: 'app-jeunesse',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, MatTableModule, MatCheckboxModule, MatSortModule, MatPaginatorModule, FormsModule, MatSidenavModule, MatFormFieldModule, ReactiveFormsModule, MatInputModule],
+  imports: [CommonModule, MatTabsModule, MatButtonModule,MatProgressSpinnerModule, MatTableModule, MatCheckboxModule, MatSortModule, MatPaginatorModule, FormsModule, MatSidenavModule, MatFormFieldModule, ReactiveFormsModule, MatInputModule,
+    MatListModule,
+    MatDividerModule],
   providers: [SupabaseService],
   templateUrl: './jeunesse.component.html',
   styleUrl: './jeunesse.component.scss',
 })
 export class JeunesseComponent implements OnInit {
   dataSource: MatTableDataSource<tableRow>;
-  selection : SelectionModel<tableRow>;
+  selection: SelectionModel<tableRow>;
 
   @ViewChild(MatTable) table: MatTable<tableRow>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  
+
+  tableLoading: boolean;
+
   nomPrenom = new FormControl('');
   listOfJeunes: Jeune[] = []
   listOfRows: tableRow[] = []
@@ -50,34 +58,37 @@ export class JeunesseComponent implements OnInit {
   constructor(
     private supabaseService: SupabaseService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) { }
 
-  
+
 
   async ngOnInit() {
+    console.log("ngOnInit Start")
+    this.tableLoading = true;
     this.listOfJeunes = await this.supabaseService.fetchJeunesseData()
-    console.log(this.listOfJeunes)
     for (let i = 0; i < this.listOfJeunes.length; i++) {
       let id = this.listOfJeunes[i].id;
-      console.log(id)
       let prenom = this.listOfJeunes[i].identite_id.prenom;
-      console.log(prenom)
       let nom = this.listOfJeunes[i].identite_id.nom;
-      console.log(nom)
       this.listOfRows.push({ id, nom, prenom })
-      console.log(this.listOfRows[i]);
     }
     this.dataSource = new MatTableDataSource(this.listOfRows);
-    this.selection = new SelectionModel<tableRow>(true); 
+    this.selection = new SelectionModel<tableRow>(true);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    
+    this.tableLoading = false;
+    console.log("NgOnInit End")
+  
 
   }
 
-  displayedColumns: string[] = [ 'nom', 'prenom','select'];
+  displayedColumns: string[] = ['nom', 'prenom', 'select'];
 
+
+  sortTable() {
+    this.dataSource.sort = this.sort; // This line should trigger the sorting
+  }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -109,22 +120,24 @@ export class JeunesseComponent implements OnInit {
   }
 
   supprimeJeune() {
+    this.tableLoading = true;
     console.log(this.selection.selected); // Access the array of selected rows
-    for(let i = 0; i < this.selection.selected.length;i++){
+    for (let i = 0; i < this.selection.selected.length; i++) {
       this.supabaseService.supprimerJeuneData(this.selection.selected[i].id);
-      for(let j = 0; j< this.dataSource.data.length; j++){
-        if(this.dataSource.data[j].id == this.selection.selected[i].id){
-          this.dataSource.data.splice(j,1);
+      for (let j = 0; j < this.dataSource.data.length; j++) {
+        if (this.dataSource.data[j].id == this.selection.selected[i].id) {
+          this.dataSource.data.splice(j, 1);
           this.dataSource.filter = "";
           console.log(this.dataSource.data);
         }
       }
     }
+    this.tableLoading = false;
     this.table.renderRows();
 
   }
 
-  
+
   async createJeune() {
     console.log("create jeune")
     if (this.nomPrenom.value != null) {

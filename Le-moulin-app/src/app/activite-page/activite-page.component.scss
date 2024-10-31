@@ -1,0 +1,110 @@
+
+.date-range-input {
+    width: 250px; /* Ensures the date range input takes full width */
+}
+.date-control-container {
+    margin-top: 200px ; /* Add spacing above and below the date control */
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Align items vertically in the center */
+    gap: 20px; /* Add space between the date picker and checkboxes */
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px; /* Space above buttons */
+    justify-content: space-between;
+}
+.create-activite-btn,
+.delete-activite-btn {
+    min-width: 150px; /* Minimum width for buttons */
+    font-weight: 500; /* Font weight for better visibility */
+}
+.left-button {
+    margin-right: auto; /* Push the "Ajouter Event" button to the left */
+    
+}
+.right-button {
+    margin-left: auto; /* Push the "Supprimer Event" button to the right */
+}
+
+.form-container {
+    max-width: 800px;
+    margin: auto; /* Center the form container */
+    padding: 20px; /* Padding around the content */
+}
+
+.button-section {
+    display: flex; /* Flexbox layout for button section */
+    justify-content: flex-end; /* Align buttons to the right */
+    gap: 10px; /* Space between buttons */
+    margin-bottom: 20px; /* Space below button section */
+}
+
+.form-section {
+    margin-bottom: 20px; /* Space below each section */
+}
+
+.grid-layout {
+    display: grid; /* Grid layout for input fields */
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 20px; /* Space between grid items */
+}
+
+
+.checkbox-section {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping if the checkboxes exceed the width */
+    gap: 20px; /* Space between checkboxes */
+    margin-top: 10px; /* Optional: Space above checkbox section */
+}
+
+h2 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+h3 {
+    margin-top: 0;
+    margin-bottom: 10px; /* Space below heading */
+    font-size: 1.2em;
+    color: #555;
+}
+
+.table-container {
+    width: 100%;
+    overflow: auto;
+  }
+  
+  .select-column {
+    width: 50px;
+    text-align: center;
+  }
+  
+  .normal-column {
+    width: 20%;
+  }
+  
+  .header-cell {
+    background-color: #000f63; /* Header background color */
+    color: white; /* Header text color */
+    font-size: 16px; /* Font size for the header */
+    font-weight: bold; /* Bold font weight for the header */
+    padding: 10px; /* Padding for the header */
+  }
+  
+  .data-cell {
+    text-align: left;
+    font-size: 14px; /* Font size for the cell values */
+    padding: 10px; /* Padding for the cell values */
+  }
+  
+  .mat-paginator {
+    margin-top: 20px;
+  }
+
+mat-divider {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}

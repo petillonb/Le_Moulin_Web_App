@@ -1,8 +1,9 @@
 import { Identite } from "./identite.entite";
+import { activiteEvent } from "./event.entite";
 
 export interface Participant {
     id: any;
-    idendite_id: Identite;
-    event_id: Event;
-    presence: any;
+    identite_id: Identite;
+    event_id: activiteEvent;
+    present: any;
   }

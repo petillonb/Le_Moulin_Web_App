@@ -17,6 +17,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
+
 
 
 
@@ -39,7 +42,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatCheckboxModule,
     MatCardModule,
     JsonPipe,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatListModule, 
+    MatDividerModule
   ],
   providers: [SupabaseService, provideNativeDateAdapter()],
   templateUrl: './profile-jeune.component.html',
@@ -449,7 +454,7 @@ export class ProfileJeuneComponent implements OnInit {
       autorisation_medical: this.jeuneData.autorisation_medical,
       autorisation_photo: this.jeuneData.autorisation_photo
     });
-    if (this.jeuneData.identite_id) {
+    if (this.jeuneData.identite_id.id != null) {
       this.formJeune.patchValue({
         nom_jeune: this.jeuneData.identite_id.nom,
         prenom_jeune: this.jeuneData.identite_id.prenom,
@@ -457,7 +462,7 @@ export class ProfileJeuneComponent implements OnInit {
         nationalite_jeune: this.jeuneData.identite_id.nationalite,
         genre_jeune: this.jeuneData.identite_id.genre
       });
-      if (this.jeuneData.identite_id.contact_id) {
+      if (this.jeuneData.identite_id.contact_id.id != null) {
         this.formJeune.patchValue({
           mobile_jeune: this.jeuneData.identite_id.contact_id.mobile,
           fixe_jeune: this.jeuneData.identite_id.contact_id.fixe,
@@ -466,18 +471,18 @@ export class ProfileJeuneComponent implements OnInit {
         });
       }
     }
-    if (this.jeuneData.famille_id) {
+    if (this.jeuneData.famille_id.id != null) {
       this.familleControl.patchValue(this.jeuneData.famille_id.nom);
       this.formFamille.patchValue({
         nom_famille: this.jeuneData.famille_id.nom
       });
-      if (this.jeuneData.famille_id.parentA_id) {
+      if (this.jeuneData.famille_id.parentA_id.id != null) {
         this.parentAControl.patchValue(this.jeuneData.famille_id.parentA_id.nom + " " + this.jeuneData.famille_id.parentA_id.prenom);
         this.formParentA.patchValue({
           nom_parentA: this.jeuneData.famille_id.parentA_id.nom,
           prenom_parentA: this.jeuneData.famille_id.parentA_id.prenom
         });
-        if (this.jeuneData.famille_id.parentA_id.contact_id) {
+        if (this.jeuneData.famille_id.parentA_id.contact_id.id != null) {
           this.formParentA.patchValue({
             mobile_parentA: this.jeuneData.famille_id.parentA_id.contact_id.mobile,
             fixe_parentA: this.jeuneData.famille_id.parentA_id.contact_id.fixe,
@@ -486,13 +491,13 @@ export class ProfileJeuneComponent implements OnInit {
           });
         }
       }
-      if (this.jeuneData.famille_id.parentB_id) {
+      if (this.jeuneData.famille_id.parentB_id.id != null) {
         this.parentBControl.patchValue(this.jeuneData.famille_id.parentB_id.nom + " " + this.jeuneData.famille_id.parentB_id.prenom);
         this.formParentB.patchValue({
           nom_parentB: this.jeuneData.famille_id.parentB_id.nom,
           prenom_parentB: this.jeuneData.famille_id.parentB_id.prenom
         });
-        if (this.jeuneData.famille_id.parentB_id.contact_id) {
+        if (this.jeuneData.famille_id.parentB_id.contact_id.id != null) {
           this.formParentB.patchValue({
             mobile_parentB: this.jeuneData.famille_id.parentB_id.contact_id.mobile,
             fixe_parentB: this.jeuneData.famille_id.parentB_id.contact_id.fixe,
@@ -503,13 +508,13 @@ export class ProfileJeuneComponent implements OnInit {
       }
 
     }
-    if (this.jeuneData.prof_principale_id) {
+    if (this.jeuneData.prof_principale_id.id != null) {
       this.profControl.patchValue(this.jeuneData.prof_principale_id.nom + " " + this.jeuneData.prof_principale_id.prenom);
       this.formProf.patchValue({
         nom_prof_principale: this.jeuneData.prof_principale_id.nom,
         prenom_prof_principale: this.jeuneData.prof_principale_id.prenom
       });
-      if (this.jeuneData.prof_principale_id.contact_id) {
+      if (this.jeuneData.prof_principale_id.contact_id.id != null) {
         this.formProf.patchValue({
           mobile_prof_principale: this.jeuneData.prof_principale_id.contact_id.mobile,
           fixe_prof_principale: this.jeuneData.prof_principale_id.contact_id.fixe,
@@ -518,14 +523,14 @@ export class ProfileJeuneComponent implements OnInit {
         })
       }
     }
-    if (this.jeuneData.accompagnateurA_id) {
+    if (this.jeuneData.accompagnateurA_id.id != null) {
       console.log("patchting formAccompagnateurAID");
       this.AccompagnateurAControl.patchValue(this.jeuneData.accompagnateurA_id.nom + " " + this.jeuneData.accompagnateurA_id.prenom);
       this.formAccompagnateurA.patchValue({
         nom_accompagnateurA: this.jeuneData.accompagnateurA_id.nom,
         prenom_accompagnateurA: this.jeuneData.accompagnateurA_id.prenom
       });
-      if (this.jeuneData.accompagnateurA_id.contact_id) {
+      if (this.jeuneData.accompagnateurA_id.contact_id.id != null) {
         console.log("patchting formAccompagnateurAContact");
         this.formAccompagnateurA.patchValue({
           mobile_accompagnateurA: this.jeuneData.accompagnateurA_id.contact_id.mobile,
@@ -534,14 +539,14 @@ export class ProfileJeuneComponent implements OnInit {
         })
       }
     }
-    if (this.jeuneData.accompagnateurB_id) {
+    if (this.jeuneData.accompagnateurB_id.id != null) {
       console.log("patchting formAccompagnateurBID");
       this.AccompagnateurBControl.patchValue(this.jeuneData.accompagnateurB_id.nom + " " + this.jeuneData.accompagnateurB_id.prenom);
       this.formAccompagnateurB.patchValue({
         nom_accompagnateurB: this.jeuneData.accompagnateurB_id.nom,
         prenom_accompagnateurB: this.jeuneData.accompagnateurB_id.prenom
       });
-      if (this.jeuneData.accompagnateurB_id.contact_id) {
+      if (this.jeuneData.accompagnateurB_id.contact_id.id != null) {
         console.log("patchting formAccompagnateurBContact");
         this.formAccompagnateurB.patchValue({
           mobile_accompagnateurB: this.jeuneData.accompagnateurB_id.contact_id.mobile,
@@ -550,14 +555,14 @@ export class ProfileJeuneComponent implements OnInit {
         })
       }
     }
-    if (this.jeuneData.urgenceA_id) {
+    if (this.jeuneData.urgenceA_id.id != null) {
       console.log("patchting formUrgenceAID");
       this.UrgenceAControl.patchValue(this.jeuneData.urgenceA_id.nom + " " + this.jeuneData.urgenceA_id.prenom);
       this.formUrgenceA.patchValue({
         nom_urgenceA: this.jeuneData.urgenceA_id.nom,
         prenom_urgenceA: this.jeuneData.urgenceA_id.prenom
       });
-      if (this.jeuneData.urgenceA_id.contact_id) {
+      if (this.jeuneData.urgenceA_id.contact_id.id != null) {
         console.log("patchting formUrgenceAContact");
         this.formUrgenceA.patchValue({
           mobile_urgenceA: this.jeuneData.urgenceA_id.contact_id.mobile,
@@ -566,14 +571,14 @@ export class ProfileJeuneComponent implements OnInit {
         })
       }
     }
-    if (this.jeuneData.urgenceB_id) {
+    if (this.jeuneData.urgenceB_id.id != null) {
       console.log("patchting formUrgenceBID");
       this.UrgenceBControl.patchValue(this.jeuneData.urgenceB_id.nom + " " + this.jeuneData.urgenceB_id.prenom);
       this.formUrgenceB.patchValue({
         nom_urgenceB: this.jeuneData.urgenceB_id.nom,
         prenom_urgenceB: this.jeuneData.urgenceB_id.prenom
       });
-      if (this.jeuneData.urgenceB_id.contact_id) {
+      if (this.jeuneData.urgenceB_id.contact_id.id != null) {
         console.log("patchting formUrgenceBContact");
         this.formUrgenceB.patchValue({
           mobile_urgenceB: this.jeuneData.urgenceB_id.contact_id.mobile,
@@ -857,7 +862,7 @@ export class ProfileJeuneComponent implements OnInit {
       // Update only the values in identite_id that are managed by the form
       this.jeuneData.identite_id.nom = this.formJeune.controls['nom_jeune'].value;
       this.jeuneData.identite_id.prenom = this.formJeune.controls['prenom_jeune'].value;
-      this.jeuneData.identite_id.date_naissance = this.formJeune.controls['date_naissance_jeune'].value;
+      this.jeuneData.identite_id.date_naissance = new Date(this.formJeune.controls['date_naissance_jeune'].value);
       this.jeuneData.identite_id.date_naissance.setDate(this.jeuneData.identite_id.date_naissance.getDate()+1);
       this.jeuneData.identite_id.nationalite = this.formJeune.controls['nationalite_jeune'].value;
       this.jeuneData.identite_id.genre = this.formJeune.controls['genre_jeune'].value;

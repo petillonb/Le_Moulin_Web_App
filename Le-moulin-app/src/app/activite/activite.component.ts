@@ -17,6 +17,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { Activite } from '../entities/activite.entite';
 import {MatButtonModule} from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
 
 export interface tableRow {
   id: number;
@@ -29,7 +32,9 @@ export interface tableRow {
 @Component({
   selector: 'app-activite',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, MatTableModule, MatCheckboxModule,MatSortModule, MatPaginatorModule, FormsModule, MatSidenavModule,MatFormFieldModule,ReactiveFormsModule, MatInputModule],
+  imports: [CommonModule, MatTabsModule, MatTableModule,MatProgressSpinnerModule, MatCheckboxModule,MatSortModule, MatPaginatorModule, FormsModule, MatSidenavModule,MatFormFieldModule,ReactiveFormsModule, MatInputModule,MatButtonModule,
+    MatListModule, 
+    MatDividerModule],
   providers: [SupabaseService],
   templateUrl: './activite.component.html',
   styleUrl: './activite.component.scss'
@@ -40,6 +45,8 @@ export class ActiviteComponent {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  tableLoading: boolean;
 
   nomActivite = new FormControl('');
   listOfActivite: Activite[] = []
@@ -52,6 +59,7 @@ export class ActiviteComponent {
   ) { }
 
   async ngOnInit() {
+    this.tableLoading = true;
     this.listOfActivite = await this.supabaseService.fetchActiviteData();
     for(let i = 0; i<this.listOfActivite.length;i++){
       let id = this.listOfActivite[i].id;
@@ -75,10 +83,14 @@ export class ActiviteComponent {
     this.selection = new SelectionModel<tableRow>(true); 
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.tableLoading = false;
   }
 
-
   displayedColumns: string[] = ['nom', 'secteur', 'publique','select'];
+
+  sortTable() {
+    this.dataSource.sort = this.sort; // This line should trigger the sorting
+  }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -109,13 +121,15 @@ export class ActiviteComponent {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
   supprimerActivite() {
+    this.tableLoading = true;
     console.log(this.selection.selected); // Access the array of selected rows
+    this.tableLoading = false;
   }
   createActivite(){
     console.log(this.nomActivite.value);
   }
   goToActivitePage(id:number){
-    console.log(id);
+    this.router.navigate([`/activités/${id}`]);;
   }
 
 

@@ -5,32 +5,41 @@ https://dribbble.com/search/school
 https://material.angular.io/guide/theming#pre-built-themes
 https://material.angular.io/components/grid-list/overview
 
--ajouter margin/padding
+-create activite.
 
+-fix 2 scroll bar.
 
--Fix null null
+-filter event:
+    -date
+    -day
+    -selected inscrit
+-filter inscrit:
+    -selected event
 
-if null:
-    hide form
-    edit = Ajouter parent
-if not null:
-    hide name form
 
 -Event Page
--Jeune activite tab
+-Go to event Page.
 
--Add delete dialogues:
-    -jeune
-    -activite
-    -event
-    -participants
+-Jeune activite tab
+-new jeune inscrire participant
+
+-Add Contact list:
+    filter:
+        -adulte/jeune
+-Add contact page:
+-GoToContact page From Activite page.
+
+-Add dialogues:
+    -duplicate name inscrire participant
+    -delete
+        -jeune
+        -activite
+        -event
+        -participants
 
 -Text Info
 -Documents
 
--Add Contact list:
-    -Add contact page:
-    filter:
 
 -filter activite:
     Year:
@@ -42,10 +51,9 @@ if not null:
     -activite participant list
     -presence Event
 
+
+
 -Login    
-
-
--beautify
 
 
 

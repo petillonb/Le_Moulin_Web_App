@@ -1,42 +1,79 @@
-.example-section {
-    margin: 12px 0;
-    height: 100%;
-  }
-  
-  .example-margin {
-    margin: 0 12px;
-  }
-  
-  ul {
-    list-style-type: none;
-    margin-top: 4px;
-  }
+.jeunes-page {
+  padding: 20px;
+}
 
-  table {
-    width: 100%;
-  }
-  
-  .mat-mdc-form-field {
-    font-size: 14px;
-    width: 100%;
-  }
+.title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
 
-  .normal-column {
-    width: 25%;
-  }
-  .select-column {
-    width: 15%; /* Adjust the width to your preference */
-    justify-content: space-between; 
-    text-align: right; /* Center the checkbox */
-    padding: 0; /* Remove padding for more compact styling */
-  }
-  
-  .button-container {
-    display: flex;
-    margin-left: auto; /* Push the button to the right */
-    justify-content: flex-end;
-  }
-  
-  .form-nom{
-    width: 25%;
-  }
+.top-section {
+  display: flex;
+  align-items: center;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.left-container {
+  display: flex;
+  align-items: center;
+
+}
+
+.search-field {
+  margin-top: 40px;
+  width: 250px;
+  max-width: 100%;
+}
+
+.create-jeune-btn,
+.delete-jeune-btn {
+  min-width: 150px;
+  font-weight: 500;
+}
+
+.mat-mdc-form-field {
+  font-size: 14px;
+}
+
+.table-container {
+  margin-top: 20px; /* Add some space above the table */
+  width: 100%;
+  overflow: auto;
+}
+
+.select-column {
+  width: 50px;
+  text-align: center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px; /* Space above buttons */
+  margin-bottom: 40px;
+  justify-content: space-between;
+}
+.left-button {
+  margin-right: auto; /* Push the "Ajouter Event" button to the left */
+}
+.right-button {
+  margin-left: auto; /* Push the "Supprimer Event" button to the right */
+}
+
+.normal-column {
+  width: 20%;
+}
+
+
+
+
+.mat-paginator {
+  margin-top: 20px;
+}
+
+.mat-spinner {
+  margin: 20px auto;
+  display: block;
+}
